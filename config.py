@@ -31,8 +31,7 @@ ey_sales_url = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/async/generate
 authorization = ''
 
 #ey credentials
-userName = 'apiuser@vestian.eyasp.in'
-password = 'SW50Z2RpZ2lnc3QjMQ=='
+
 apiaccesskey = '80e27ccb48a34034866ee416a5989e6e'
 refresh_token_ey = ''
         
