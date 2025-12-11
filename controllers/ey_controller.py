@@ -154,7 +154,7 @@ def bulkInvoices_CN(invoice, data_list):
 
         pass
     except Exception as e:
-        lw.logRecord("Error in bulkInvoices: " + str(e))
+        lw.logRecord("Error in bulkInvoices_CN: " + str(e))
 
 def bulkBills_DN(cndn, data_list):
     try:
@@ -289,7 +289,7 @@ def bulkBills_DN(cndn, data_list):
                     print(str(e))
         pass
     except Exception as e:
-        lw.logRecord("Error in creditDebitNote: " + str(e))
+        lw.logRecord("Error in bulkBills_DN: " + str(e))
 
 # def payments(payments):
 #     try:

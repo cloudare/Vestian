@@ -539,7 +539,7 @@ class ZohoController:
                             bills["req"].append(bill)
                             print("bills" + str(bills))
                         except Exception as e:
-                            lw.logRecord("Error in bulkbill for loop: " + str(e))
+                            lw.logRecord("Error in bulkBills for loop: " + str(e))
                             print(str(e))
                     print("bills:" + str(bills))
                     
@@ -547,7 +547,7 @@ class ZohoController:
                 pass
             # return invoices
         except Exception as e:
-            lw.logRecord("Error in bulkInvoice: " + str(e))
+            lw.logRecord("Error in bulkBills: " + str(e))
 
     @staticmethod
     def bulkVendorCredit():
@@ -711,7 +711,7 @@ class ZohoController:
                             vendorcredits["req"].append(vendorcredit)
                             print("vendorcredits" + str(vendorcredits))
                         except Exception as e:
-                            lw.logRecord("Error in bulkbill for loop: " + str(e))
+                            lw.logRecord("Error in bulkVendorCredit for loop: " + str(e))
                             print(str(e))
                     print("vendorcredits:" + str(vendorcredits))
                     
@@ -719,7 +719,7 @@ class ZohoController:
                 pass
             # return invoices
         except Exception as e:
-            lw.logRecord("Error in bulkInvoice: " + str(e))
+            lw.logRecord("Error in bulkVendorCredit: " + str(e))
 
     @staticmethod
     def bulkExpense():
@@ -869,14 +869,14 @@ class ZohoController:
                                 expense["lineItems"].append(line_items)
                                 expenses["req"].append(expense)
                         except Exception as e:
-                            lw.logRecord("Error in bulkInvoice for loop: " + str(e))
+                            lw.logRecord("Error in bulkExpense for loop: " + str(e))
                     # print("Invoices" + str(invoices))
                     
                     cc.bulkBills_DN(expenses, expense_list)
                 pass
             # return invoices
         except Exception as e:
-            lw.logRecord("Error in bulkInvoice: " + str(e))
+            lw.logRecord("Error in bulkExpense: " + str(e))
 
     @staticmethod
     def bulkInvoice():
@@ -1197,13 +1197,13 @@ class ZohoController:
                                 credit_note["lineItems"] = line_items
                                 credit_notes["req"].append(credit_note)
                             except Exception as e:
-                                lw.logRecord("Error in bulkInvoice for loop: " + str(e))
+                                lw.logRecord("Error in bulkCreditNote for loop: " + str(e))
                         print("CN: " + str(credit_notes))
                         cc.bulkInvoices_CN(credit_notes, cn_list)
                 except Exception as e:
-                    lw.logRecord("Error in creditDebitNote for CN: " + str(e))
+                    lw.logRecord("Error in bulkCreditNote for CN: " + str(e))
         except Exception as e:
-            lw.logRecord("Error in fetch_contacts: " + str(e))
+            lw.logRecord("Error in bulkCreditNote: " + str(e))
 
     # @staticmethod
     # def payments():

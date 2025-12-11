@@ -64,7 +64,7 @@ def purchase(body):
         # auth, reftoken = getToken()
         global access_token
         auth = access_token
-        lw.logBackUpRecord("Calling bulkInvoice API to send data to EY Portal.")
+        lw.logBackUpRecord("Calling purchase API to send data to EY Portal.")
         url = sd.ey_purchase_url
         header = ey_header(auth)
         lw.logBackUpRecord("URL:" + str(url))
@@ -83,14 +83,14 @@ def purchase(body):
             lw.logBackUpRecord("Bulk Invoice Data has been uploaded Successfully.")
         return response.json()
     except Exception as e:
-        lw.logRecord("Error in bulkInvoice: " + str(e))
+        lw.logRecord("Error in purchase: " + str(e))
 
 def sales(body):
     try:
         # auth = getToken()
         global access_token
         auth = access_token
-        lw.logBackUpRecord("Calling creditDebitNote API.")
+        lw.logBackUpRecord("Calling sales API.")
         url = sd.ey_sales_url
         header = ey_header(auth)
         lw.logBackUpRecord("URL:" + str(url))
@@ -109,7 +109,7 @@ def sales(body):
             lw.logBackUpRecord("credit /Debit Note Data has been uploaded Successfully.")
         return response
     except Exception as e:
-        lw.logRecord("Error in creditDebitNote: " + str(e))
+        lw.logRecord("Error in sales: " + str(e))
 
 def get_status(ack):
     try:
@@ -117,7 +117,7 @@ def get_status(ack):
         while(1==1):
             global access_token
             auth = access_token
-            lw.logBackUpRecord("Calling creditDebitNote API.")
+            lw.logBackUpRecord("Calling get_status API.")
             url = sd.ey_get_status
             header = ey_header_status(auth, ack)
             lw.logBackUpRecord("URL:" + str(url))
@@ -137,7 +137,7 @@ def get_status(ack):
                 return response
             time.sleep(60)
     except Exception as e:
-        lw.logRecord("Error in creditDebitNote: " + str(e))
+        lw.logRecord("Error in get_status: " + str(e))
 
 def get_sales_data(ack):
     try:
@@ -145,7 +145,7 @@ def get_sales_data(ack):
         while(1==1):
             global access_token
             auth = access_token
-            lw.logBackUpRecord("Calling creditDebitNote API.")
+            lw.logBackUpRecord("Calling get_sales_data API.")
             url = sd.ey_sales_ack
             header = ey_header_status(auth, ack)
             lw.logBackUpRecord("URL:" + str(url))
@@ -165,7 +165,7 @@ def get_sales_data(ack):
                 return response
             time.sleep(60)
     except Exception as e:
-        lw.logRecord("Error in creditDebitNote: " + str(e))
+        lw.logRecord("Error in get_sales_data: " + str(e))
 
 def get_purchase_data(ack):
     try:
@@ -173,7 +173,7 @@ def get_purchase_data(ack):
         while(1==1):
             global access_token
             auth = access_token
-            lw.logBackUpRecord("Calling creditDebitNote API.")
+            lw.logBackUpRecord("Calling get_purchase_data API.")
             url = sd.ey_purchase_ack
             header = ey_header_status(auth, ack)
             lw.logBackUpRecord("URL:" + str(url))
@@ -193,5 +193,4 @@ def get_purchase_data(ack):
                 return response
             time.sleep(60)
     except Exception as e:
-        lw.logRecord("Error in creditDebitNote: " + str(e))
-        
+        lw.logRecord("Error in get_purchase_data: " + str(e))
