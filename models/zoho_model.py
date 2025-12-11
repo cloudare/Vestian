@@ -322,55 +322,53 @@ class ZohoModel:
         except Exception as e:
             lw.logRecord("Error in fetch_cn_details: " + str(e))
 
+    # @staticmethod
+    # def fetch_payments(page):
+    #     """Fetch Payments from Zoho CRM"""
+    #     try:
+    #         # page = 1
+    #         # access_token = ZohoModel.get_access_token()
+    #         tz = pytz.timezone("Asia/Kolkata")
+    #         time = (datetime.now(tz)- timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%S%z")
+    #         time = time.replace("+", "%2B")
+    #         # print(time)
+    #         header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #         lw.logBackUpRecord("Calling API for Payments List for 25 records at a time.")
+    #         lw.logBackUpRecord("URL:" + str(f"{sd.zoho_payments}?organization_id={sd.organization_id}&page={page}&per_page=200")) #&last_modified_time={time}
+    #         lw.logBackUpRecord("Header:" + str(header))
+    #         response = requests.get(f"{sd.zoho_payments}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+    #         # print(response.json())
+    #         if response.status_code == 401:
+    #             ZohoModel.access_token = ZohoModel.get_access_token()
+    #             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #             response = requests.get(f"{sd.zoho_payments}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+    #             lw.logBackUpRecord(ZohoModel.access_token)
+    #         # print(response.json())
+    #         lw.logBackUpRecord("Payment List Data:" + str(response.json()))
+    #         return response.json()
+    #     except Exception as e:
+    #         lw.logRecord("Error in fetch_payments: " + str(e))
 
-    @staticmethod
-    def fetch_payments(page):
-        """Fetch Payments from Zoho CRM"""
-        try:
-            # page = 1
-            # access_token = ZohoModel.get_access_token()
-            tz = pytz.timezone("Asia/Kolkata")
-            time = (datetime.now(tz)- timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%S%z")
-            time = time.replace("+", "%2B")
-            # print(time)
-            header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-            lw.logBackUpRecord("Calling API for Payments List for 25 records at a time.")
-            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_payments}?organization_id={sd.organization_id}&page={page}&per_page=200")) #&last_modified_time={time}
-            lw.logBackUpRecord("Header:" + str(header))
-            response = requests.get(f"{sd.zoho_payments}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
-            # print(response.json())
-            if response.status_code == 401:
-                ZohoModel.access_token = ZohoModel.get_access_token()
-                header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_payments}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
-                lw.logBackUpRecord(ZohoModel.access_token)
-            # print(response.json())
-            lw.logBackUpRecord("Payment List Data:" + str(response.json()))
-            return response.json()
-        except Exception as e:
-            lw.logRecord("Error in fetch_payments: " + str(e))
-
-
-    @staticmethod
-    def fetch_payments_details(id):
-        """Fetch Payment Details from Zoho CRM"""
-        try:
-            # access_token = ZohoModel.get_access_token()
-            lw.logBackUpRecord("Calling API for Payment deatils.")
-            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_payments}/{id}?organization_id={sd.organization_id}"))
-            header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-            lw.logBackUpRecord("Header:" + str(header))
+    # @staticmethod
+    # def fetch_payments_details(id):
+    #     """Fetch Payment Details from Zoho CRM"""
+    #     try:
+    #         # access_token = ZohoModel.get_access_token()
+    #         lw.logBackUpRecord("Calling API for Payment deatils.")
+    #         lw.logBackUpRecord("URL:" + str(f"{sd.zoho_payments}/{id}?organization_id={sd.organization_id}"))
+    #         header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #         lw.logBackUpRecord("Header:" + str(header))
             
-            response = requests.get(f"{sd.zoho_payments}/{id}?organization_id={sd.organization_id}", headers=header)
-            if response.status_code == 401:
-                ZohoModel.access_token = ZohoModel.get_access_token()
-                header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_payments}/{id}?organization_id={sd.organization_id}", headers=header)
-                lw.logBackUpRecord(ZohoModel.access_token)
-            # lw.logBackUpRecord("Payment Details Data:" + str(response.json()))
-            return response.json()
-        except Exception as e:
-            lw.logRecord("Error in fetch_payments_details: " + str(e))
+    #         response = requests.get(f"{sd.zoho_payments}/{id}?organization_id={sd.organization_id}", headers=header)
+    #         if response.status_code == 401:
+    #             ZohoModel.access_token = ZohoModel.get_access_token()
+    #             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #             response = requests.get(f"{sd.zoho_payments}/{id}?organization_id={sd.organization_id}", headers=header)
+    #             lw.logBackUpRecord(ZohoModel.access_token)
+    #         # lw.logBackUpRecord("Payment Details Data:" + str(response.json()))
+    #         return response.json()
+    #     except Exception as e:
+    #         lw.logRecord("Error in fetch_payments_details: " + str(e))
 
     @staticmethod
     def update_invoice(id, body):
@@ -379,6 +377,54 @@ class ZohoModel:
             body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
             # access_token = ZohoModel.get_access_token()
             lw.logBackUpRecord("Calling API for Update Invoices.")
+            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}"))
+            header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+            lw.logBackUpRecord("Header:" + str(header))
+            lw.logBackUpRecord("Update Invoice Json:" + str(body))
+            json.dumps(body)
+            # print(body)
+            response = requests.put(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", json=body, headers=header)
+            if response.status_code == 401:
+                ZohoModel.access_token = ZohoModel.get_access_token()
+                header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+                response = requests.put(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", headers=header)
+                lw.logBackUpRecord(ZohoModel.access_token)
+            lw.logBackUpRecord("Update Invoice status:" + str(response.json()))
+            return response.json()
+        except Exception as e:
+            lw.logRecord("Error in update_invoice: " + str(e))
+
+    @staticmethod
+    def update_vendor_credit(id, body):
+        """Fetch Update Vendor Credit from Zoho CRM"""
+        try:
+            body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
+            # access_token = ZohoModel.get_access_token()
+            lw.logBackUpRecord("Calling API for Update Vendor Credit.")
+            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}"))
+            header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+            lw.logBackUpRecord("Header:" + str(header))
+            lw.logBackUpRecord("Update Vendor Credit Json:" + str(body))
+            json.dumps(body)
+            # print(body)
+            response = requests.put(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", json=body, headers=header)
+            if response.status_code == 401:
+                ZohoModel.access_token = ZohoModel.get_access_token()
+                header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+                response = requests.put(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", headers=header)
+                lw.logBackUpRecord(ZohoModel.access_token)
+            lw.logBackUpRecord("Update Vendor Credit status:" + str(response.json()))
+            return response.json()
+        except Exception as e:
+            lw.logRecord("Error in update_vendor_credit: " + str(e))
+
+    @staticmethod
+    def update_bill(id, body):
+        """Fetch Update Bills from Zoho CRM"""
+        try:
+            body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
+            # access_token = ZohoModel.get_access_token()
+            lw.logBackUpRecord("Calling API for Update Bills.")
             lw.logBackUpRecord("URL:" + str(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}"))
             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
             lw.logBackUpRecord("Header:" + str(header))
@@ -391,82 +437,106 @@ class ZohoModel:
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
                 response = requests.put(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", headers=header)
                 lw.logBackUpRecord(ZohoModel.access_token)
-            lw.logBackUpRecord("Update Invoice status:" + str(response.json()))
+            lw.logBackUpRecord("Update Bills status:" + str(response.json()))
             return response.json()
         except Exception as e:
-            lw.logRecord("Error in update_invoice: " + str(e))
+            lw.logRecord("Error in update_bill: " + str(e))
 
     @staticmethod
-    def create_vendor_credit(body):
-        """Creating Vendor Credits from Zoho CRM"""
+    def update_credit_note(id, body):
+        """Fetch Update Credit Note from Zoho CRM"""
         try:
-            # body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
+            body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
             # access_token = ZohoModel.get_access_token()
-            lw.logBackUpRecord("Calling API for Creating Vendor Credits.")
-            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_dn}?organization_id={sd.organization_id}"))
+            lw.logBackUpRecord("Calling API for Update Credit Note.")
+            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}"))
             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
             lw.logBackUpRecord("Header:" + str(header))
-            lw.logBackUpRecord("Creating Vendor Credits Json:" + str(body))
+            lw.logBackUpRecord("Update Invoice Json:" + str(body))
             json.dumps(body)
             # print(body)
-            response = requests.post(f"{sd.zoho_dn}?organization_id={sd.organization_id}", json=body, headers=header)
+            response = requests.put(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", json=body, headers=header)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.post(f"{sd.zoho_dn}?organization_id={sd.organization_id}", headers=header)
+                response = requests.put(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", headers=header)
                 lw.logBackUpRecord(ZohoModel.access_token)
-            # lw.logBackUpRecord("Creating Vendor Credits status:" + str(response.json()))
+            lw.logBackUpRecord("Update Credit Note status:" + str(response.json()))
             return response.json()
         except Exception as e:
-            lw.logRecord("Error in create_vendor_credit: " + str(e))
+            lw.logRecord("Error in update_credit_note: " + str(e))
 
-    @staticmethod
-    def apply_to_bills(id, body):
-        """Apply to bills from Zoho CRM"""
-        try:
-            # body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
-            # access_token = ZohoModel.get_access_token()
-            lw.logBackUpRecord("Calling API for Apply to bills.")
-            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_dn}/{id}/bills?organization_id={sd.organization_id}"))
-            header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-            lw.logBackUpRecord("Header:" + str(header))
-            lw.logBackUpRecord("Apply to bills Json:" + str(body))
-            json.dumps(body)
-            # print(body)
-            response = requests.post(f"{sd.zoho_dn}/{id}/bills?organization_id={sd.organization_id}", json=body, headers=header)
-            if response.status_code == 401:
-                ZohoModel.access_token = ZohoModel.get_access_token()
-                header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.post(f"{sd.zoho_dn}/{id}/bills?organization_id={sd.organization_id}", headers=header)
-                lw.logBackUpRecord(ZohoModel.access_token)
-            print(response.json())
-            lw.logBackUpRecord("Apply to bills status:" + str(response.json()))
-            return response.json()
-        except Exception as e:
-            lw.logRecord("Error in apply_to_bills: " + str(e))
+    # @staticmethod
+    # def create_vendor_credit(body):
+    #     """Creating Vendor Credits from Zoho CRM"""
+    #     try:
+    #         # body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
+    #         # access_token = ZohoModel.get_access_token()
+    #         lw.logBackUpRecord("Calling API for Creating Vendor Credits.")
+    #         lw.logBackUpRecord("URL:" + str(f"{sd.zoho_dn}?organization_id={sd.organization_id}"))
+    #         header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #         lw.logBackUpRecord("Header:" + str(header))
+    #         lw.logBackUpRecord("Creating Vendor Credits Json:" + str(body))
+    #         json.dumps(body)
+    #         # print(body)
+    #         response = requests.post(f"{sd.zoho_dn}?organization_id={sd.organization_id}", json=body, headers=header)
+    #         if response.status_code == 401:
+    #             ZohoModel.access_token = ZohoModel.get_access_token()
+    #             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #             response = requests.post(f"{sd.zoho_dn}?organization_id={sd.organization_id}", headers=header)
+    #             lw.logBackUpRecord(ZohoModel.access_token)
+    #         # lw.logBackUpRecord("Creating Vendor Credits status:" + str(response.json()))
+    #         return response.json()
+    #     except Exception as e:
+    #         lw.logRecord("Error in create_vendor_credit: " + str(e))
 
-    @staticmethod
-    def create_paymets(body):
-        """Create Payments from Zoho CRM"""
-        try:
-            # body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
-            # access_token = ZohoModel.get_access_token()
-            lw.logBackUpRecord("Calling API for creating Payments.")
-            lw.logBackUpRecord("URL:" + str(f"{sd.zoho_payments}?organization_id={sd.organization_id}"))
-            header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-            lw.logBackUpRecord("Header:" + str(header))
-            lw.logBackUpRecord("Create Payments Json:" + str(body))
-            json.dumps(body)
-            # print(body)
-            response = requests.post(f"{sd.zoho_payments}?organization_id={sd.organization_id}", json=body, headers=header)
-            if response.status_code == 401:
-                ZohoModel.access_token = ZohoModel.get_access_token()
-                header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.post(f"{sd.zoho_payments}?organization_id={sd.organization_id}", headers=header)
-                lw.logBackUpRecord(ZohoModel.access_token)
-            print(response.json())
+    # @staticmethod
+    # def apply_to_bills(id, body):
+    #     """Apply to bills from Zoho CRM"""
+    #     try:
+    #         # body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
+    #         # access_token = ZohoModel.get_access_token()
+    #         lw.logBackUpRecord("Calling API for Apply to bills.")
+    #         lw.logBackUpRecord("URL:" + str(f"{sd.zoho_dn}/{id}/bills?organization_id={sd.organization_id}"))
+    #         header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #         lw.logBackUpRecord("Header:" + str(header))
+    #         lw.logBackUpRecord("Apply to bills Json:" + str(body))
+    #         json.dumps(body)
+    #         # print(body)
+    #         response = requests.post(f"{sd.zoho_dn}/{id}/bills?organization_id={sd.organization_id}", json=body, headers=header)
+    #         if response.status_code == 401:
+    #             ZohoModel.access_token = ZohoModel.get_access_token()
+    #             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #             response = requests.post(f"{sd.zoho_dn}/{id}/bills?organization_id={sd.organization_id}", headers=header)
+    #             lw.logBackUpRecord(ZohoModel.access_token)
+    #         print(response.json())
+    #         lw.logBackUpRecord("Apply to bills status:" + str(response.json()))
+    #         return response.json()
+    #     except Exception as e:
+    #         lw.logRecord("Error in apply_to_bills: " + str(e))
 
-            # lw.logBackUpRecord("Create Payments status:" + str(json.dumps(response.json(), ensure_ascii=False)))
-            return response.json()
-        except Exception as e:
-            lw.logRecord("Error in create_paymets: " + str(e))
+    # @staticmethod
+    # def create_paymets(body):
+    #     """Create Payments from Zoho CRM"""
+    #     try:
+    #         # body['due_date'] = body['due_date'].strftime('%Y-%m-%d')
+    #         # access_token = ZohoModel.get_access_token()
+    #         lw.logBackUpRecord("Calling API for creating Payments.")
+    #         lw.logBackUpRecord("URL:" + str(f"{sd.zoho_payments}?organization_id={sd.organization_id}"))
+    #         header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #         lw.logBackUpRecord("Header:" + str(header))
+    #         lw.logBackUpRecord("Create Payments Json:" + str(body))
+    #         json.dumps(body)
+    #         # print(body)
+    #         response = requests.post(f"{sd.zoho_payments}?organization_id={sd.organization_id}", json=body, headers=header)
+    #         if response.status_code == 401:
+    #             ZohoModel.access_token = ZohoModel.get_access_token()
+    #             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
+    #             response = requests.post(f"{sd.zoho_payments}?organization_id={sd.organization_id}", headers=header)
+    #             lw.logBackUpRecord(ZohoModel.access_token)
+    #         print(response.json())
+
+    #         # lw.logBackUpRecord("Create Payments status:" + str(json.dumps(response.json(), ensure_ascii=False)))
+    #         return response.json()
+    #     except Exception as e:
+    #         lw.logRecord("Error in create_paymets: " + str(e))

@@ -26,6 +26,9 @@ ey_auth_url = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/authenticate'
 ey_refresh_url = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/refreshtoken'
 ey_purchase_url = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/async/savePurcahseRegister' 
 ey_sales_url = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/async/generateIRN' 
+ey_get_status = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/async/getStatusForAckNum'
+ey_sales_ack = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/async/getData'
+ey_purchase_ack = 'https://einvoicesyncapi.eyasp.in/einvoiceapi/v2.0/async/purchaseRegisterGetData'
 
 #ey Token
 authorization = ''

@@ -386,8 +386,10 @@ class ZohoController:
         try:
             has_more_page = True
             page = 1
-            bills = {"req": []}
+            # bills = {"req": []}
             while (has_more_page == True):
+                bills = {"req": []}
+                bill_list = []
                 data = ZohoModel.fetch_bills(page)
                 page += 1
 
@@ -398,6 +400,7 @@ class ZohoController:
                     for idx, item in enumerate(data['bills'], start=1):
                         try:
                             if item['entity_type'] == "bill":
+                                bill_list.append({"id": str(item['bill_id']), "number": str(item['bill_number'])})
                                 # print(str(item['bill_id']))
                                 details = ZohoModel.fetch_bill_details(str(item['bill_id']))
                                 print(details['bill']['total'])
@@ -540,7 +543,7 @@ class ZohoController:
                             print(str(e))
                     print("bills:" + str(bills))
                     
-                    # cc.bulkBills_DN(bills)
+                    cc.bulkBills_DN(bills, bill_list)
                 pass
             # return invoices
         except Exception as e:
@@ -552,8 +555,10 @@ class ZohoController:
         try:
             has_more_page = True
             page = 1
-            vendorcredits = {"req": []}
+            # vendorcredits = {"req": []}
             while (has_more_page == True):
+                vendorcredits = {"req": []}
+                vc_list = []
                 data = ZohoModel.fetch_dn(page)
                 page += 1
 
@@ -565,6 +570,7 @@ class ZohoController:
                         try:
                             # if item['entity_type'] == "bill":
                             # print(str(item['bill_id']))
+                            vc_list.append({"id": str(item['vendor_credit_id']), "number": str(item['vendor_credit_number'])})
                             details = ZohoModel.fetch_dn_details(str(item['vendor_credit_id']))
                             print(details['vendor_credit']['total'])
                             custdetails = sd.organization_address[str(details['vendor_credit']['branch_name'])]
@@ -709,19 +715,22 @@ class ZohoController:
                             print(str(e))
                     print("vendorcredits:" + str(vendorcredits))
                     
-                    # cc.bulkBills_DN(vendorcredits)
+                    cc.bulkBills_DN(vendorcredits, vc_list)
                 pass
             # return invoices
         except Exception as e:
             lw.logRecord("Error in bulkInvoice: " + str(e))
+
     @staticmethod
     def bulkExpense():
         """Fetch Expense and format response"""
         try:
             has_more_page = True
             page = 1
-            expenses = {"req": []}
+            # expenses = {"req": []}
             while (has_more_page == True):
+                expenses = {"req": []}
+                expense_list = []
                 data = ZohoModel.fetch_expense(page)
                 page += 1
 
@@ -732,7 +741,7 @@ class ZohoController:
                     for idx, item in enumerate(data['expenses'], start=1):
                         try:
                             if item['entity_type'] == "expenses":
-                                
+                                expense_list.append({"id": str(item['expense_id']), "number": str(item['expense_number'])})
                                 # print(str(item['expenses_id']))
                                 details = ZohoModel.fetch_expense_details(str(item['expense_id']))
                                 print(details['expenses']['total'])
@@ -863,13 +872,11 @@ class ZohoController:
                             lw.logRecord("Error in bulkInvoice for loop: " + str(e))
                     # print("Invoices" + str(invoices))
                     
-                    cc.bulkInvoices(expenses)
+                    cc.bulkBills_DN(expenses, expense_list)
                 pass
             # return invoices
         except Exception as e:
             lw.logRecord("Error in bulkInvoice: " + str(e))
-
-
 
     @staticmethod
     def bulkInvoice():
@@ -877,8 +884,10 @@ class ZohoController:
         try:
             has_more_page = True
             page = 1
-            invoices = {"req": []}
+            # invoices = {"req": []}
             while (has_more_page == True):
+                invoices = {"req": []}
+                invoice_list = []
                 data = ZohoModel.fetch_invoice(page)
                 page += 1
 
@@ -891,6 +900,7 @@ class ZohoController:
                             # if item['entity_type'] == "invoices":
                                 
                             # print(str(item['invoices_id']))
+                            invoice_list.append({"id": str(item['invoice_id']), "number": str(item['invoice_number'])})
                             details = ZohoModel.fetch_invoice_details(str(item['invoice_id']))
                             print(details['invoice']['total'])
                             reverse = 'N'
@@ -1026,7 +1036,7 @@ class ZohoController:
                             lw.logRecord("Error in bulkInvoice for loop: " + str(e))
                         
                     print("Invoices" + str(invoices))
-                    # cc.bulkInvoices_CN(invoices)
+                    cc.bulkInvoices_CN(invoices, invoice_list)
                 pass
             # return invoices
         except Exception as e:
@@ -1038,9 +1048,11 @@ class ZohoController:
         try:
             has_more_page = True
             page = 1
-            credit_notes = {"req": []}
+            # credit_notes = {"req": []}
             while (has_more_page == True):
                 try:
+                    credit_notes = {"req": []}
+                    cn_list = []
                     data = ZohoModel.fetch_cn(page)
                     page += 1
 
@@ -1052,6 +1064,7 @@ class ZohoController:
                         
                             try:                                    
                                 # print(str(item['invoices_id']))
+                                cn_list.append({"id": str(item['creditnote_id']), "number": str(item['creditnote_number'])})
                                 details = ZohoModel.fetch_cn_details(str(item['creditnote_id']))
                                 print(details['creditnote']['total'])
                                 reverse = 'N'
@@ -1186,7 +1199,7 @@ class ZohoController:
                             except Exception as e:
                                 lw.logRecord("Error in bulkInvoice for loop: " + str(e))
                         print("CN: " + str(credit_notes))
-                        # cc.creditDebitNote(credit_notes)
+                        cc.bulkInvoices_CN(credit_notes, cn_list)
                 except Exception as e:
                     lw.logRecord("Error in creditDebitNote for CN: " + str(e))
         except Exception as e:
@@ -1257,90 +1270,90 @@ class ZohoController:
     #     except Exception as e:
     #         lw.logRecord("Error in payments: " + str(e))
 
-    @staticmethod
-    def update_invoice(trns_id, vend_id, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date):
-        try:
-            for t, v, i, vi, da, dd, md in zip_longest(trns_id, vend_id, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date, fillvalue="NA"):
-                data = ZohoModel.fetch_bill_details(i)
-                # print(data)
-                cc.update_invoice(data['bill'], t, v, i, vi, da, dd, md)
-        except Exception as e:
-            lw.logRecord("Error in update_invoice: " + str(e))
+    # @staticmethod
+    # def update_invoice(trns_id, vend_id, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date):
+    #     try:
+    #         for t, v, i, vi, da, dd, md in zip_longest(trns_id, vend_id, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date, fillvalue="NA"):
+    #             data = ZohoModel.fetch_bill_details(i)
+    #             # print(data)
+    #             cc.update_invoice(data['bill'], t, v, i, vi, da, dd, md)
+    #     except Exception as e:
+    #         lw.logRecord("Error in update_invoice: " + str(e))
 
-    @staticmethod
-    def create_all_vendor_credit(trns_id, vend_id, vend_nm, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date):
-        try:
-            for t, v, vn, i, vi, da, dd, md in zip_longest(trns_id, vend_id, vend_nm, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date, fillvalue="NA"):
-                details = ZohoModel.fetch_bill_details(str(i))
-                print(details)
-                print(details['bill']['total'])
-                body = {
-                    "vendor_id": str(v),
-                    "vendor_name": str(vn),
-                    "bill_id": str(i),
-                    "bill_number": str(vi),
-                    "date": str(dd),
-                    "line_items": []
-                }
-                discount_rate = round((float(details['bill']['discount_amount'])/float(details['bill']['total'])),3)
-                rate = round((float(da)/ (float(details['bill']['total']))),3) #-details['bill']['discount_amount'])
-                print(str(rate))
-                for item in details['bill']['line_items']:
-                    print(float(item['item_total']))
-                    print(round((float(item['item_total'])*discount_rate),2))
-                    print(round((float(item['item_total'])*discount_rate),2) * rate)
-                    amt = round(((float(item['item_total']) - round((float(item['item_total'])*discount_rate),2)) * rate),3)
-                    print(amt)
-                    line_items = {
-                                "item_id": item['item_id'],
-                                "account_id": item['account_id'],
-                                "name": item['name'],
-                                "description": item['description'],
-                                "rate": amt,
-                                "quantity": item['quantity'],
-                                "item_type": item['item_type'],
-                            }
-                    body["line_items"].append(line_items)
-                print(body)
-                data = ZohoModel.create_vendor_credit(body)
-                if data['message'] == 'Vendor credit has been created.':
-                    body_bills = {
-                                    "bills": [
-                                        {
-                                            "bill_id": str(i),
-                                            "amount_applied": float(da)
-                                        }
-                                    ]
-                                }
-                    data_bills = ZohoModel.apply_to_bills(str(data['vendor_credit']['vendor_credit_id']), body_bills)
-                    if data_bills['message'] == 'Credits have been applied to the bill(s).':
-                        lw.logBackUpRecord("Credit has been applied successfullly for bill: " + str(vi))
-                        body_pay = {
-                                    "vendor_id": str(v),
-                                    "bills": [
-                                        {
-                                            "bill_id": str(i),
-                                            "amount_applied": float(details['bill']['total']) - float(da)
-                                        }
-                                    ],
-                                    "date": str(dd),
-                                    "amount": float(details['bill']['total']) - float(da)
-                                }
-                        print(body_pay)
-                        data_pay = ZohoModel.create_paymets(body_pay)
-                        print(data_pay)
-                        if data_pay['message'] == 'The payment made to the vendor has been recorded':
-                            lw.logBackUpRecord("Payment has been created successfullly for bill: " + str(vi))
-                            cc.postingAck(t, v, i, vi)
-                        else: 
-                            lw.logRecord("Error while creating payments for bill: " + str(vi))
+    # @staticmethod
+    # def create_all_vendor_credit(trns_id, vend_id, vend_nm, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date):
+    #     try:
+    #         for t, v, vn, i, vi, da, dd, md in zip_longest(trns_id, vend_id, vend_nm, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date, fillvalue="NA"):
+    #             details = ZohoModel.fetch_bill_details(str(i))
+    #             print(details)
+    #             print(details['bill']['total'])
+    #             body = {
+    #                 "vendor_id": str(v),
+    #                 "vendor_name": str(vn),
+    #                 "bill_id": str(i),
+    #                 "bill_number": str(vi),
+    #                 "date": str(dd),
+    #                 "line_items": []
+    #             }
+    #             discount_rate = round((float(details['bill']['discount_amount'])/float(details['bill']['total'])),3)
+    #             rate = round((float(da)/ (float(details['bill']['total']))),3) #-details['bill']['discount_amount'])
+    #             print(str(rate))
+    #             for item in details['bill']['line_items']:
+    #                 print(float(item['item_total']))
+    #                 print(round((float(item['item_total'])*discount_rate),2))
+    #                 print(round((float(item['item_total'])*discount_rate),2) * rate)
+    #                 amt = round(((float(item['item_total']) - round((float(item['item_total'])*discount_rate),2)) * rate),3)
+    #                 print(amt)
+    #                 line_items = {
+    #                             "item_id": item['item_id'],
+    #                             "account_id": item['account_id'],
+    #                             "name": item['name'],
+    #                             "description": item['description'],
+    #                             "rate": amt,
+    #                             "quantity": item['quantity'],
+    #                             "item_type": item['item_type'],
+    #                         }
+    #                 body["line_items"].append(line_items)
+    #             print(body)
+    #             data = ZohoModel.create_vendor_credit(body)
+    #             if data['message'] == 'Vendor credit has been created.':
+    #                 body_bills = {
+    #                                 "bills": [
+    #                                     {
+    #                                         "bill_id": str(i),
+    #                                         "amount_applied": float(da)
+    #                                     }
+    #                                 ]
+    #                             }
+    #                 data_bills = ZohoModel.apply_to_bills(str(data['vendor_credit']['vendor_credit_id']), body_bills)
+    #                 if data_bills['message'] == 'Credits have been applied to the bill(s).':
+    #                     lw.logBackUpRecord("Credit has been applied successfullly for bill: " + str(vi))
+    #                     body_pay = {
+    #                                 "vendor_id": str(v),
+    #                                 "bills": [
+    #                                     {
+    #                                         "bill_id": str(i),
+    #                                         "amount_applied": float(details['bill']['total']) - float(da)
+    #                                     }
+    #                                 ],
+    #                                 "date": str(dd),
+    #                                 "amount": float(details['bill']['total']) - float(da)
+    #                             }
+    #                     print(body_pay)
+    #                     data_pay = ZohoModel.create_paymets(body_pay)
+    #                     print(data_pay)
+    #                     if data_pay['message'] == 'The payment made to the vendor has been recorded':
+    #                         lw.logBackUpRecord("Payment has been created successfullly for bill: " + str(vi))
+    #                         cc.postingAck(t, v, i, vi)
+    #                     else: 
+    #                         lw.logRecord("Error while creating payments for bill: " + str(vi))
 
-                    else: 
-                        lw.logRecord("Error while applying credit for bill: " + str(vi))
-                else:
-                    lw.logRecord("Error while creating vendor credit for: " + str(vi))
-                # print(data)
-                # cc.update_invoice(data['bill'], t, v, i, vi, da, dd, md)
-        except Exception as e:
-            print("Error in update_invoice: " + str(e))
-            lw.logRecord("Error in update_invoice: " + str(e))
+    #                 else: 
+    #                     lw.logRecord("Error while applying credit for bill: " + str(vi))
+    #             else:
+    #                 lw.logRecord("Error while creating vendor credit for: " + str(vi))
+    #             # print(data)
+    #             # cc.update_invoice(data['bill'], t, v, i, vi, da, dd, md)
+    #     except Exception as e:
+    #         print("Error in update_invoice: " + str(e))
+    #         lw.logRecord("Error in update_invoice: " + str(e))
