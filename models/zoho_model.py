@@ -16,7 +16,7 @@ class ZohoModel:
             header = {"Authorization": f"Bearer {sd.access_token}"}
             lw.logBackUpRecord("URL:" + str(url))
             lw.logBackUpRecord("Header:" + str(header))
-            response = requests.post(url, headers=header)#, data=payload)
+            response = requests.post(url, headers=header, verify=False)#, data=payload)
             return response.json().get("access_token")
         except Exception as e:
             lw.logRecord("Error in get access token: " + str(e))
@@ -84,12 +84,12 @@ class ZohoModel:
             lw.logBackUpRecord("Calling API for Bill List for 200 records at a time.")
             lw.logBackUpRecord("URL:" + str(f"{sd.zoho_bills}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor")) #&last_modified_time={time}
             lw.logBackUpRecord("Header:" + str(header))
-            response = requests.get(f"{sd.zoho_bills}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header) #&last_modified_time={time}
+            response = requests.get(f"{sd.zoho_bills}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header, verify=False) #&last_modified_time={time}
             # print(response.json())
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_bills}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header) #&last_modified_time={time}
+                response = requests.get(f"{sd.zoho_bills}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header, verify=False) #&last_modified_time={time}
                 lw.logBackUpRecord(ZohoModel.access_token)
             # print(response.json())
             # lw.logBackUpRecord("Bill List Data:" + str(response.json()))
@@ -108,11 +108,11 @@ class ZohoModel:
             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
             lw.logBackUpRecord("Header:" + str(header))
             
-            response = requests.get(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", headers=header)
+            response = requests.get(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.get(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             print(response.json())
             
@@ -135,12 +135,12 @@ class ZohoModel:
             lw.logBackUpRecord("Calling API for Expense List for 200 records at a time.")
             lw.logBackUpRecord("URL:" + str(f"{sd.zoho_expense}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor")) #&last_modified_time={time}
             lw.logBackUpRecord("Header:" + str(header))
-            response = requests.get(f"{sd.zoho_expense}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header) #&last_modified_time={time}
+            response = requests.get(f"{sd.zoho_expense}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header, verify=False) #&last_modified_time={time}
             # print(response.json())
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_expense}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header) #&last_modified_time={time}
+                response = requests.get(f"{sd.zoho_expense}?organization_id={sd.organization_id}&page={page}&per_page=200&contact_type=vendor", headers=header, verify=False) #&last_modified_time={time}
                 lw.logBackUpRecord(ZohoModel.access_token)
             print(response.json())
             # lw.logBackUpRecord("Expense List Data:" + str(response.json()))
@@ -159,11 +159,11 @@ class ZohoModel:
             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
             lw.logBackUpRecord("Header:" + str(header))
             
-            response = requests.get(f"{sd.zoho_expense}/{id}?organization_id={sd.organization_id}", headers=header)
+            response = requests.get(f"{sd.zoho_expense}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_expense}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.get(f"{sd.zoho_expense}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             # print(response.json())
             
@@ -186,12 +186,12 @@ class ZohoModel:
             lw.logBackUpRecord("Calling API for DN List for 200 records at a time.")
             lw.logBackUpRecord("URL:" + str(f"{sd.zoho_dn}?organization_id={sd.organization_id}&page={page}&per_page=200")) #&last_modified_time={time}
             lw.logBackUpRecord("Header:" + str(header))
-            response = requests.get(f"{sd.zoho_dn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+            response = requests.get(f"{sd.zoho_dn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header, verify=False) #&last_modified_time={time}
             print(response.json())
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_dn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+                response = requests.get(f"{sd.zoho_dn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header, verify=False) #&last_modified_time={time}
                 lw.logBackUpRecord(ZohoModel.access_token)
             print(response.json())
             lw.logBackUpRecord("DN List Data:" + str(response.json()))
@@ -210,11 +210,11 @@ class ZohoModel:
             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
             lw.logBackUpRecord("Header:" + str(header))
             
-            response = requests.get(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", headers=header)
+            response = requests.get(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.get(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             # lw.logBackUpRecord("DN Details Data:" + str(response.json()))
             print(response.json())
@@ -236,12 +236,12 @@ class ZohoModel:
             lw.logBackUpRecord("Calling API for Invoice List for 200 records at a time.")
             lw.logBackUpRecord("URL:" + str(f"{sd.zoho_invoice}?organization_id={sd.organization_id}&page={page}&per_page=200")) #&last_modified_time={time}
             lw.logBackUpRecord("Header:" + str(header))
-            response = requests.get(f"{sd.zoho_invoice}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+            response = requests.get(f"{sd.zoho_invoice}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header, verify=False) #&last_modified_time={time}
             print(response.json())
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_invoice}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+                response = requests.get(f"{sd.zoho_invoice}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header, verify=False) #&last_modified_time={time}
                 lw.logBackUpRecord(ZohoModel.access_token)
             # print(response.json())
             # lw.logBackUpRecord("Invoice List Data:" + str(response.json()))
@@ -260,11 +260,11 @@ class ZohoModel:
             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
             lw.logBackUpRecord("Header:" + str(header))
             
-            response = requests.get(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", headers=header)
+            response = requests.get(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.get(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             # lw.logBackUpRecord("Invoice Details Data:" + str(response.json()))
             print(str(response.json()))
@@ -286,12 +286,12 @@ class ZohoModel:
             lw.logBackUpRecord("Calling API for CN List for 200 records at a time.")
             lw.logBackUpRecord("URL:" + str(f"{sd.zoho_cn}?organization_id={sd.organization_id}&page={page}&per_page=200")) #&last_modified_time={time}
             lw.logBackUpRecord("Header:" + str(header))
-            response = requests.get(f"{sd.zoho_cn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+            response = requests.get(f"{sd.zoho_cn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header, verify=False) #&last_modified_time={time}
             # print(response.json())
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_cn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header) #&last_modified_time={time}
+                response = requests.get(f"{sd.zoho_cn}?organization_id={sd.organization_id}&page={page}&per_page=200", headers=header, verify=False) #&last_modified_time={time}
                 lw.logBackUpRecord(ZohoModel.access_token)
             # print(response.json())
             lw.logBackUpRecord("CN List Data:" + str(response.json()))
@@ -310,11 +310,11 @@ class ZohoModel:
             header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
             lw.logBackUpRecord("Header:" + str(header))
             
-            response = requests.get(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", headers=header)
+            response = requests.get(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.get(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.get(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             # print(response.json())
             lw.logBackUpRecord("CN Details Data:" + str(response.json()))
@@ -383,11 +383,11 @@ class ZohoModel:
             lw.logBackUpRecord("Update Invoice Json:" + str(body))
             json.dumps(body)
             # print(body)
-            response = requests.put(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", json=body, headers=header)
+            response = requests.put(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", json=body, headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.put(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.put(f"{sd.zoho_invoice}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             lw.logBackUpRecord("Update Invoice status:" + str(response.json()))
             return response.json()
@@ -407,11 +407,11 @@ class ZohoModel:
             lw.logBackUpRecord("Update Vendor Credit Json:" + str(body))
             json.dumps(body)
             # print(body)
-            response = requests.put(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", json=body, headers=header)
+            response = requests.put(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", json=body, headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.put(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.put(f"{sd.zoho_dn}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             lw.logBackUpRecord("Update Vendor Credit status:" + str(response.json()))
             return response.json()
@@ -431,11 +431,11 @@ class ZohoModel:
             lw.logBackUpRecord("Update Invoice Json:" + str(body))
             json.dumps(body)
             # print(body)
-            response = requests.put(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", json=body, headers=header)
+            response = requests.put(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", json=body, headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.put(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.put(f"{sd.zoho_bills}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             lw.logBackUpRecord("Update Bills status:" + str(response.json()))
             return response.json()
@@ -455,11 +455,11 @@ class ZohoModel:
             lw.logBackUpRecord("Update Invoice Json:" + str(body))
             json.dumps(body)
             # print(body)
-            response = requests.put(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", json=body, headers=header)
+            response = requests.put(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", json=body, headers=header, verify=False)
             if response.status_code == 401:
                 ZohoModel.access_token = ZohoModel.get_access_token()
                 header = {"Authorization": f"Zoho-oauthtoken {ZohoModel.access_token}"}
-                response = requests.put(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", headers=header)
+                response = requests.put(f"{sd.zoho_cn}/{id}?organization_id={sd.organization_id}", headers=header, verify=False)
                 lw.logBackUpRecord(ZohoModel.access_token)
             lw.logBackUpRecord("Update Credit Note status:" + str(response.json()))
             return response.json()

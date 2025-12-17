@@ -9,11 +9,11 @@ import controllers.ey_controller as cc
 def mainProcess():
     try:
         # ZohoController.get_contacts()
-        ZohoController.bulkBills()
-        ZohoController.bulkVendorCredit()
+        # ZohoController.bulkBills()
+        # ZohoController.bulkVendorCredit()
         # ZohoController.bulkExpense()
         ZohoController.bulkInvoice()
-        ZohoController.bulkCreditNote()
+        # ZohoController.bulkCreditNote()
         # ZohoController.payments()
         # trns_id, vend_id, vend_nm, int_inv_no, ven_int_no, dis_amt, dis_date, matdate = cc.postingCreditDebitNote()
 
