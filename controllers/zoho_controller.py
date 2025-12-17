@@ -34,7 +34,7 @@ class ZohoController:
             except:
                 pass
             if str(gstin) == 'URP':
-                supplytype = 'IMP'
+                supplytype = 'EXT'
             if (reverse == 'N'):
                 if (float(data['tax_percentage']) > 0.0):
                     # if is_tax_line == True:
@@ -264,49 +264,65 @@ class ZohoController:
                     pass
                 lineitems = {
                     # Optional
-                    "itemNo": idx +1,
-                    "glCodeTaxableVal": "",
-                    "supplyType": supplytype,
-                    "cif": "",
-                    "customDuty": "",
-                    "hsnsacCode": str(data['hsn_or_sac']),
-                    "productCode": "", #"100000009185728",
-                    "itemDesc": data['description'].replace('"',"'").replace("\n",""),
-                    "itemType": data['item_type'], #"FG",
-                    "itemUqc": data['unit'],
-                    "itemQty": data['quantity'],
-                    "taxableVal": data['item_total'],
-                    "igstRt": igstRt,
-                    "igstAmt": igstAmt,
-                    "cgstRt": cgstRt,
-                    "cgstAmt": cgstAmt,
-                    "sgstRt": cgstRt,
-                    "sgstAmt": cgstAmt,
-                    "tcsIgstAmnt": 0,
-                    "tcsCgstAmt": 0,
-                    "tcsSgstAmt": 0,
-                    "tdsIgstAmt": igst_tds,
-                    "tdsCgstAmt": cgst_tds,
-                    "tdsSgstAmt": cgst_tds,
-                    "itcEntitlement": itc,
-                    "lineItemAmt": "",
-                    "crDrReason": "",
-                    "unitPrice": "",
-                    "itemAmt": "",
-                    "itemDiscount": "0",
-                    "preTaxAmt": "",
-                    "totalItemAmt": "",
-                    "preceedingInvNo": "",
-                    "preceedingInvDate": "",
-                    "orderLineRef": "",
-                    "supportingDocURL": "",
-                    "supportingDocBase64": "",
-                    "eligIndicator": eligIndicator,
-                    "availIgst": avail_igst,
-                    "availCgst": avail_cgst,
-                    "availSgst": avail_cgst,
-                    "availCess": "0",
-                    "udf1": "", #"257026"
+                    "itemNo" : idx +1,
+                    "supplyType" : supplytype,
+                    "fob" : "",
+                    "exportDuty" : "",
+                    "hsnsacCode" : str(data['hsn_or_sac']),
+                    "productCode" : "",
+                    "itemType" : "",
+                    "itemUqc" : data['unit'],
+                    "itemQty" : data['quantity'],
+                    "igstRt" : igstRt,
+                    "igstAmt" : igstAmt,
+                    "cgstRt" : cgstRt,
+                    "cgstAmt" : cgstAmt,
+                    "sgstRt" : cgstRt,
+                    "sgstAmt" : cgstAmt,
+                    "cessRtAdvalorem" : 0,
+                    "cessAmtAdvalorem" : 0,
+                    "cessRtSpecific" : 0,
+                    "cessAmtSpecific" : 0,
+                    "stateCessRt" : 0,
+                    "stateCessAmt" : 0,
+                    "otherValues" : 0,
+                    "lineItemAmt" : 43532,
+                    "plantCode" : "",
+                    "serialNoII" : "", #"UE00535-WG0000-NAMT",
+                    "productName" : (data['description']).replace('"',"'").replace("\n",""), #"Unstudded Earrings",
+                    "isService" : str(service),
+                    "barcode" : "",
+                    "batchNameOrNo" : "",
+                    "batchExpiryDate" : "",
+                    "warrantyDate" : "",
+                    "originCountry" : "",
+                    "freeQuantity" : 0,
+                    "unitPrice" : float(data['rate']),
+                    "itemAmt" : float(data['rate']),
+                    "itemDiscount" : 0,
+                    "preTaxAmt" : 0,
+                    "totalItemAmt" : (float(data['rate']) * float(data['quantity'])) + igstAmt + (2*cgstAmt),
+                    "tcsCgstAmt" : 0,
+                    "tcsSgstAmt" : 0,
+                    "tdsIgstAmt" : 0,
+                    "tdsCgstAmt" : 0,
+                    "tdsSgstAmt" : 0,
+                    "subDivision" : "",
+                    "udf1" : "",
+                    "ecomTransactionID" : "",
+                    "stateCessSpecificRt" : 0,
+                    "stateCessSpecificAmt" : 0,
+                    "tcsRtIncomeTax" : 0,
+                    "tcsAmtIncomeTax" : 0,
+                    "docRefNo" : "",
+                    "paidAmt" : 0,
+                    "balanceAmt" : 0,
+                    "profitCentre3" : "",
+                    "profitCentre4" : "",
+                    "profitCentre5" : "",
+                    "profitCentre6" : "",
+                    "profitCentre7" : "",
+                    "profitCentre8" : ""
                 }
                 itemlist.append(lineitems)
             print(itemlist)
@@ -428,7 +444,7 @@ class ZohoController:
                                 sup_type = ""
                                 tdsFlag = "N"
                                 try:
-                                    if float(details['vendor_credit']['tds_percent']) > 0.0:
+                                    if float(details['bill']['tds_percent']) > 0.0:
                                         tdsFlag = 'Y'
                                 except Exception as e:
                                     print(str(e))
@@ -483,8 +499,8 @@ class ZohoController:
                                     "custOrSupAddr1": str(custdetails['address_line1']),
                                     "custOrSupAddr2": str(custdetails['address_line2']),
                                     "custOrSupAddr4": str(custdetails['city']),
-                                    "billToState": str(custdetails['state']),
-                                    "shipToState": str(custdetails['state']),
+                                    "billToState": str((custdetails['gstin'])[:2]),
+                                    "shipToState": str((custdetails['gstin'])[:2]),
                                     "pos": str((custdetails['gstin'])[:2]),
                                     "stateApplyingCess": "",
                                     "portCode": "",
@@ -655,8 +671,8 @@ class ZohoController:
                             "custOrSupAddr1": str(custdetails['address_line1']),
                             "custOrSupAddr2": str(custdetails['address_line2']),
                             "custOrSupAddr4": str(custdetails['city']),
-                            "billToState": str(custdetails['state']),
-                            "shipToState": str(custdetails['state']),
+                            "billToState": str((custdetails['gstin'])[:2]),
+                            "shipToState": str((custdetails['gstin'])[:2]),
                             "pos": str((custdetails['gstin'])[:2]),
                             "stateApplyingCess": "",
                             "portCode": "",
@@ -925,7 +941,7 @@ class ZohoController:
                             print(date)
                             return_period = formatted_date.strftime("%m%Y")
                             crDrPreGst = "N"
-                            sup_type = "TAX"
+                            sup_type = subsupplyType = "TAX"
                             tdsFlag = "N"
                             try:
                                 if float(details['invoice']['tds_percent']) > 0.0:
@@ -934,17 +950,20 @@ class ZohoController:
                                 print(str(e))
                             # year = ZohoController.get_fiscal_year(date)
                             if str(details['invoice']['gst_treatment']) == "overseas":
+                                subsupplyType = "EXP"
                                 if float(details['invoice']['tax_total']) >0.0:
                                     sup_type = "EXPT"
                                 else:
-                                    sup_type = "EXPWT"
+                                    sup_type = "EXPT"
                             elif str(details['invoice']['gst_treatment']) == "business_gst":
                                 sup_type = "TAX"
+                                subsupplyType = "TAX"
                             elif str(details['invoice']['gst_treatment']) == "business_sez":
                                 if float(details['invoice']['tax_total']) >0.0:
                                     sup_type = "SEZWP"
                                 else:
                                     sup_type = "SEZWOP"
+                                subsupplyType = "TAX"
                             
                             igstRt = cgstRt = igstAmt = cgstAmt = 0
                             taxtype = ''.join([c for c in str(details['invoice']['taxes'][0]['tax_name']) if c.isalpha()])
@@ -957,76 +976,109 @@ class ZohoController:
                             # custGstin = sd.organization_gst.get(str(details['invoice']['branch_name']))
                             supdetails = sd.organization_address[str(details['invoice']['branch_name'])]
                             supgstin = supdetails['gstin']
+                            sub_total = float(details['invoice']['sub_total'])
+                            print(sub_total)
                             invoice = {
                                 # Optional
-                                    "srcFileName": "Standard",
-                                    "srcIdentifier": "Zoho",
-                                    "returnPeriod": str(return_period),
-                                    "suppGstin": str(supgstin),
-                                    "docType": "INV",
-                                    "docNo": str(details['invoice']['invoice_number']),
-                                    "docDate": str(date),
-                                    "orgDocType": "",
-                                    "crDrPreGst": crDrPreGst,
-                                    "custGstin": str(custGstin),
-                                    "supType": str(sup_type),
-                                    "diffPercent": "",
-                                    "orgSgstin": "",
-                                    "custOrSupName": "",
-                                    "supCode": str(custpin),
-                                    "custOrSupAddr1": str(details['invoice']['billing_address']['street']),
-                                    "custOrSupAddr2": str(details['invoice']['billing_address']['address']),
-                                    "custOrSupAddr4": str(details['invoice']['billing_address']['street2']),
-                                    "billToState": str(details['invoice']['billing_address']['state']),
-                                    "shipToState": str(details['invoice']['shipping_address']['state']),
-                                    "pos": str(custStateCode),
-                                    "stateApplyingCess": "",
-                                    "portCode": "",
-                                    "billOfEntry": "",
-                                    "billOfEntryDate": "",
-                                    "reverseCharge": str(reverse),
-                                    "accVoucherNo": "", #"202502011001321",
-                                    "accVoucherDate": "", #"2025-10-07",
-                                    "taxScheme": "",
-                                    "docCat": "",
-                                    "supTradeName": str("Vestian"),
-                                    "supLegalName": str("Vestian"),
-                                    "supBuildingNo": str(supdetails['address_line1']),
-                                    "supBuildingName": str(supdetails['address_line1']),
-                                    "supLocation": str(supdetails['address_line2']),
-                                    "supPincode": str(supdetails['pincode']),
-                                    "supStateCode": str(supgstin[:2]),
-                                    "supPhone": str(supdetails['phone']),
-                                    "supEmail": str(supdetails['email']),
-                                    "custTradeName": str(details['invoice']['customer_name']),
-                                    "custPincode": "",
-                                    "custPhone": "",
-                                    "custEmail": "",
-                                    "shipToGstin": "",
-                                    "shipToTradeName": "",
-                                    "shipToLegalName": "",
-                                    "shipToBuildingNo": "",
-                                    "shipToBuildingName": "",
-                                    "shipToLocation": "",
-                                    "shipToPincode": "",
-                                    "invOtherCharges": "",
-                                    "invAssessableAmt": str(details['invoice']['sub_total']),
-                                    "invIgstAmt": str(igstAmt),
-                                    "invCgstAmt": str(cgstAmt),
-                                    "invSgstAmt": str(cgstAmt),
-                                    "invCessAdvaloremAmt": "",
-                                    "roundOff": "",
-                                    "exchangeRt": details['invoice']['exchange_rate'],
-                                    "totalInvValueInWords": "", #str(details['invoice']['sub_total']),
-                                    "foreignCurrency": "",
-                                    "countryCode": "",
-                                    "invValueFc": "",
-                                    "invPeriodStartDate": "",
-                                    "invPeriodEndDate": "",
-                                    "accDetail": "", #"2550326",
-                                    "division": str(details['invoice']['branch_name']),
-                                    "profitCentre1": "",
-                                    "tdsFlag": tdsFlag,
+                                    "userId" : "",
+                                    "srcFileName" : "Standard",
+                                    "srcIdentifier" : "ZOHO",
+                                    "returnPeriod" : str(return_period),
+                                    "suppGstin" : str(supgstin),
+                                    "docType" : "INV",
+                                    "docNo" : str(details['invoice']['invoice_number']),
+                                    "docDate" : str(date),
+                                    "orgDocType" : "",
+                                    "crDrPreGst" : "",
+                                    "custGstin" : "",
+                                    "custOrSupType" : sup_type,
+                                    "orgCgstin" : "",
+                                    "custOrSupName" : str(details['invoice']['customer_name']),
+                                    "custOrSupCode" : "",
+                                    "custOrSupAddr1" : str(details['invoice']['billing_address']['street']),
+                                    "custOrSupAddr2" : str(details['invoice']['billing_address']['address']),
+                                    "custOrSupAddr4" : str(details['invoice']['billing_address']['city']),
+                                    "billToState" : str(custStateCode),
+                                    "shipToState" : str(custStateCode),
+                                    "pos" : str(custStateCode),
+                                    "stateApplyingCess" : "",
+                                    "portCode" : "",
+                                    "shippingBillNo" : "",
+                                    "shippingBillDate" : "",
+                                    "sec7OfIgstFlag" : "",
+                                    "reverseCharge" : str(reverse),
+                                    "tcsFlag" : "",
+                                    "ecomGSTIN" : "",
+                                    "claimRefundFlag" : "",
+                                    "autoPopToRefundFlag" : "",
+                                    "accVoucherNo" : "",
+                                    "accVoucherDate" : "",
+                                    "ewbNo" : "",
+                                    "ewbDate" : "",
+                                    "irn" : "",
+                                    "irnDate" : "",
+                                    "taxScheme" : "NEWB",
+                                    "docCat" : "",
+                                    "supTradeName" : "Vestian",
+                                    "supLegalName" : "Vestian",
+                                    "supBuildingNo" : str(supdetails['address_line1']),
+                                    "supBuildingName" : str(supdetails['address_line2']),
+                                    "supLocation" : str(supdetails['city']),
+                                    "supPincode" : str(supdetails['pincode']),
+                                    "supStateCode" : str(supdetails['gstin'][:2]),
+                                    "supPhone" : str(supdetails['phone']),
+                                    "supEmail" : str(supdetails['email']),
+                                    "custTradeName" : str(details['invoice']['customer_name']),
+                                    "customerLegalName" : str(details['invoice']['customer_name']),
+                                    "custPincode" : str(custpin),
+                                    "custPhone" : "",
+                                    "custEmail" : "",
+                                    "dispatcherStateCode" : str(supdetails['gstin'][:2]),
+                                    "shipToGstin" : "",
+                                    "shipToTradeName" : str(details['invoice']['customer_name']),
+                                    "shipToLegalName" : str(details['invoice']['customer_name']),
+                                    "shipToBuildingNo" : str(details['invoice']['billing_address']['street']),
+                                    "shipToBuildingName" : str(details['invoice']['billing_address']['address']),
+                                    "shipToLocation" : str(details['invoice']['billing_address']['city']),
+                                    "shipToPincode" : str(custpin),
+                                    "invOtherCharges" : "",
+                                    "invAssessableAmt" : float(details['invoice']['sub_total']),
+                                    "invIgstAmt" : float(igstAmt),
+                                    "invCgstAmt" : float(cgstAmt),
+                                    "invSgstAmt" : float(cgstAmt),
+                                    "invCessAdvaloremAmt" : 0,
+                                    "invCessSpecificAmt" : 0,
+                                    "invStateCessAmt" : 0,
+                                    "roundOff" : 0,
+                                    "totalInvValueInWords" : "",
+                                    "countryCode" : "IN",
+                                    "invValueFc" : sub_total + float(igstAmt) + (2*float(cgstAmt)),
+                                    "invPeriodStartDate" : "",
+                                    "invPeriodEndDate" : "",
+                                    "payeeName" : "",
+                                    "modeOfPayment" : "",
+                                    "branchOrIfscCode" : "",
+                                    "paymentTerms" : "",
+                                    "paymentInstruction" : "",
+                                    "creditTransfer" : "",
+                                    "directDebit" : "",
+                                    "creditDays" : "",
+                                    "paymentDueDate" : "",
+                                    "accDetail" : "",
+                                    "tdsFlag" : "",
+                                    "tranType" : "",
+                                    "subsupplyType" : subsupplyType,
+                                    "otherSupplyTypeDesc" : "",
+                                    "exchangeRt" : float(details['invoice']['exchange_rate']),
+                                    "companyCode" : "",
+                                    "glPostingDate" : "",
+                                    "salesOrderNo" : "",
+                                    "custTan" : "",
+                                    "canReason" : "",
+                                    "canRemarks" : "",
+                                    "tcsFlagIncomeTax" : "",
+                                    "custPANOrAadhaar" : "",
+                                    "invRemarks" : "",
                                     "lineItems": []
                                 }
                             # invoice["lineItems"].append(line_items)
@@ -1088,8 +1140,9 @@ class ZohoController:
                                 date = formatted_date.strftime("%d/%m/%Y")
                                 print(date)
                                 return_period = formatted_date.strftime("%m%Y")
-                                crDrPreGst = "N"
-                                sup_type = "TAX"
+                                crDrPreGst = "Y"
+                                sup_type = subsupplyType = "SR"
+
                                 tdsFlag = "N"
                                 try:
                                     if float(details['creditnote']['tds_percent']) > 0.0:
@@ -1099,16 +1152,19 @@ class ZohoController:
                                 # year = ZohoController.get_fiscal_year(date)
                                 if str(details['creditnote']['gst_treatment']) == "overseas":
                                     if float(details['creditnote']['tax_total']) >0.0:
+                                        subsupplyType = "EXP"
                                         sup_type = "EXPT"
                                     else:
-                                        sup_type = "EXPWT"
+                                        sup_type = "EXPT"
                                 elif str(details['creditnote']['gst_treatment']) == "business_gst":
                                     sup_type = "TAX"
+                                    subsupplyType = "SR"
                                 elif str(details['creditnote']['gst_treatment']) == "business_sez":
                                     if float(details['creditnote']['tax_total']) >0.0:
                                         sup_type = "SEZWP"
                                     else:
                                         sup_type = "SEZWOP"
+                                    subsupplyType = "SR"
                                 
                                 igstRt = cgstRt = igstAmt = cgstAmt = 0
                                 taxtype = ''.join([c for c in str(details['creditnote']['taxes'][0]['tax_name']) if c.isalpha()])
@@ -1123,75 +1179,106 @@ class ZohoController:
                                 supgstin = supdetails['gstin']
                                 credit_note = {
                                     # Optional
-                                        "srcFileName": "Standard",
-                                        "srcIdentifier": "Zoho",
-                                        "returnPeriod": str(return_period),
-                                        "suppGstin": str(supgstin),
-                                        "docType": "INV",
-                                        "docNo": str(details['creditnote']['invoice_number']),
-                                        "docDate": str(date),
-                                        "orgDocType": "",
-                                        "crDrPreGst": crDrPreGst,
-                                        "custGstin": str(custGstin),
-                                        "supType": str(sup_type),
-                                        "diffPercent": "",
-                                        "orgSgstin": "",
-                                        "custOrSupName": "",
-                                        "supCode": str(custpin),
-                                        "custOrSupAddr1": str(details['creditnote']['billing_address']['street']),
-                                        "custOrSupAddr2": str(details['creditnote']['billing_address']['address']),
-                                        "custOrSupAddr4": str(details['creditnote']['billing_address']['street2']),
-                                        "billToState": str(details['creditnote']['billing_address']['state']),
-                                        "shipToState": str(details['creditnote']['shipping_address']['state']),
-                                        "pos": str(custStateCode),
-                                        "stateApplyingCess": "",
-                                        "portCode": "",
-                                        "billOfEntry": "",
-                                        "billOfEntryDate": "",
-                                        "reverseCharge": str(reverse),
-                                        "accVoucherNo": "", #"202502011001321",
-                                        "accVoucherDate": "", #"2025-10-07",
-                                        "taxScheme": "",
-                                        "docCat": "",
-                                        "supTradeName": str("Vestian"),
-                                        "supLegalName": str("Vestian"),
-                                        "supBuildingNo": str(supdetails['address_line1']),
-                                        "supBuildingName": str(supdetails['address_line1']),
-                                        "supLocation": str(supdetails['address_line2']),
-                                        "supPincode": str(supdetails['pincode']),
-                                        "supStateCode": str(supgstin[:2]),
-                                        "supPhone": str(supdetails['phone']),
-                                        "supEmail": str(supdetails['email']),
-                                        "custTradeName": str(details['creditnote']['customer_name']),
-                                        "custPincode": "",
-                                        "custPhone": "",
-                                        "custEmail": "",
-                                        "shipToGstin": "",
-                                        "shipToTradeName": "",
-                                        "shipToLegalName": "",
-                                        "shipToBuildingNo": "",
-                                        "shipToBuildingName": "",
-                                        "shipToLocation": "",
-                                        "shipToPincode": "",
-                                        "invOtherCharges": "",
-                                        "invAssessableAmt": str(details['creditnote']['sub_total']),
-                                        "invIgstAmt": str(igstAmt),
-                                        "invCgstAmt": str(cgstAmt),
-                                        "invSgstAmt": str(cgstAmt),
-                                        "invCessAdvaloremAmt": "",
-                                        "roundOff": "",
-                                        "exchangeRt": details['creditnote']['exchange_rate'],
-                                        "totalInvValueInWords": "", #str(details['creditnote']['sub_total']),
-                                        "foreignCurrency": "",
-                                        "countryCode": "",
-                                        "invValueFc": "",
-                                        "invPeriodStartDate": "",
-                                        "invPeriodEndDate": "",
-                                        "accDetail": "", #"2550326",
-                                        "division": str(details['creditnote']['branch_name']),
-                                        "profitCentre1": "",
-                                        "tdsFlag": tdsFlag,
-                                        "lineItems": []
+                                        "userId" : "",
+                                    "srcFileName" : "Standard",
+                                    "srcIdentifier" : "ZOHO",
+                                    "returnPeriod" : str(return_period),
+                                    "suppGstin" : str(supgstin),
+                                    "docType" : "INV",
+                                    "docNo" : str(details['invoice']['invoice_number']),
+                                    "docDate" : str(date),
+                                    "orgDocType" : "",
+                                    "crDrPreGst" : crDrPreGst,
+                                    "custGstin" : "",
+                                    "custOrSupType" : sup_type,
+                                    "orgCgstin" : "",
+                                    "custOrSupName" : str(details['invoice']['customer_name']),
+                                    "custOrSupCode" : "",
+                                    "custOrSupAddr1" : str(details['invoice']['billing_address']['street']),
+                                    "custOrSupAddr2" : str(details['invoice']['billing_address']['address']),
+                                    "custOrSupAddr4" : str(details['invoice']['billing_address']['address2']),
+                                    "billToState" : str(custStateCode),
+                                    "shipToState" : str(custStateCode),
+                                    "pos" : str(custStateCode),
+                                    "stateApplyingCess" : "",
+                                    "portCode" : "",
+                                    "shippingBillNo" : "",
+                                    "shippingBillDate" : "",
+                                    "sec7OfIgstFlag" : "",
+                                    "reverseCharge" : str(reverse),
+                                    "tcsFlag" : "",
+                                    "ecomGSTIN" : "",
+                                    "claimRefundFlag" : "",
+                                    "autoPopToRefundFlag" : "",
+                                    "accVoucherNo" : "",
+                                    "accVoucherDate" : "",
+                                    "ewbNo" : "",
+                                    "ewbDate" : "",
+                                    "irn" : "",
+                                    "irnDate" : "",
+                                    "taxScheme" : "NEWB",
+                                    "docCat" : "",
+                                    "supTradeName" : "Vestian",
+                                    "supLegalName" : "Vestian",
+                                    "supBuildingNo" : str(supdetails['address_line1']),
+                                    "supBuildingName" : str(supdetails['address_line2']),
+                                    "supLocation" : str(supdetails['city']),
+                                    "supPincode" : str(supdetails['pincode']),
+                                    "supStateCode" : str(supdetails['gstin'][:2]),
+                                    "supPhone" : str(supdetails['phone']),
+                                    "supEmail" : str(supdetails['email']),
+                                    "custTradeName" : str(details['invoice']['customer_name']),
+                                    "customerLegalName" : str(details['invoice']['customer_name']),
+                                    "custPincode" : str(custpin),
+                                    "custPhone" : "",
+                                    "custEmail" : "",
+                                    "dispatcherStateCode" : str(supdetails['gstin'][:2]),
+                                    "shipToGstin" : "",
+                                    "shipToTradeName" : str(details['invoice']['customer_name']),
+                                    "shipToLegalName" : str(details['invoice']['customer_name']),
+                                    "shipToBuildingNo" : str(details['invoice']['billing_address']['street']),
+                                    "shipToBuildingName" : str(details['invoice']['billing_address']['address']),
+                                    "shipToLocation" : str(details['invoice']['billing_address']['city']),
+                                    "shipToPincode" : str(custpin),
+                                    "invOtherCharges" : "",
+                                    "invAssessableAmt" : float(details['invoice']['sub_total']),
+                                    "invIgstAmt" : float(igstAmt),
+                                    "invCgstAmt" : float(cgstAmt),
+                                    "invSgstAmt" : float(cgstAmt),
+                                    "invCessAdvaloremAmt" : 0,
+                                    "invCessSpecificAmt" : 0,
+                                    "invStateCessAmt" : 0,
+                                    "roundOff" : 0,
+                                    "totalInvValueInWords" : "",
+                                    "countryCode" : "IN",
+                                    "invValueFc" : float(details['invoice']['sub_total']) + float(igstAmt) (2*float(cgstAmt)),
+                                    "invPeriodStartDate" : "",
+                                    "invPeriodEndDate" : "",
+                                    "payeeName" : "",
+                                    "modeOfPayment" : "",
+                                    "branchOrIfscCode" : "",
+                                    "paymentTerms" : "",
+                                    "paymentInstruction" : "",
+                                    "creditTransfer" : "",
+                                    "directDebit" : "",
+                                    "creditDays" : "",
+                                    "paymentDueDate" : "",
+                                    "accDetail" : "",
+                                    "tdsFlag" : "",
+                                    "tranType" : "",
+                                    "subsupplyType" : subsupplyType,
+                                    "otherSupplyTypeDesc" : "",
+                                    "exchangeRt" : float(details['invoice']['exchange_rate']),
+                                    "companyCode" : "",
+                                    "glPostingDate" : "",
+                                    "salesOrderNo" : "",
+                                    "custTan" : "",
+                                    "canReason" : "",
+                                    "canRemarks" : "",
+                                    "tcsFlagIncomeTax" : "",
+                                    "custPANOrAadhaar" : "",
+                                    "invRemarks" : "",
+                                    "lineItems": []
                                     }
                                 # invoice["lineItems"].append(line_items)
                                 credit_note["lineItems"] = line_items
