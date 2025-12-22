@@ -6,8 +6,6 @@ access_token = ''
 
 def ey_header_auth():
     header = {
-        # "Accept" : "application/json",
-        # "Content-Type" : "application/x-www-form-urlencoded",
         "username": sd.userName,
         "password": sd.password,
         "apiaccesskey": sd.apiaccesskey
@@ -19,18 +17,13 @@ def ey_header_status(auth, ack):
         "accessToken" : auth,
         "X-EAckNo" : ack,
         "apiaccesskey" : sd.apiaccesskey
-        # "REQUEST_TYPE" : "ENC",
-        # "applicationName" : "invoicemanager"
     }
     return header
 
 def ey_header(auth):
     header = {
         "accessToken" : auth,
-        # "Content-Type" : "application/x-www-form-urlencoded",
         "apiaccesskey" : sd.apiaccesskey
-        # "REQUEST_TYPE" : "ENC",
-        # "applicationName" : "invoicemanager"
     }
     return header
 
@@ -71,17 +64,22 @@ def purchase(body):
         lw.logBackUpRecord("Header:" + str(header))
         lw.logBackUpRecord("Payload:" + str(body))
         response = requests.post(url, headers=header, json=body)#, data=payload)
-
-        if response.status_code == 500 or response.status_code == 401:# or response.status_code == 400:
-            auth = getToken()
+        response = response.json()
+        print(response)
+        if response['status'] == 0:# or response.status_code == 400:
+            auth, refreshToken = getToken()
+            header = ey_header(auth)
             response = requests.post(url, headers=header, json=body)
             # auth = authorization
             lw.logBackUpRecord(auth)
-        elif response.status_code == 400:
+            response = response.json()
+            print(response)
+        elif response['status'] == '0':
             lw.logBackUpRecord("Bulk Invoice Data has been uploaded with error.")
-        else:
-            lw.logBackUpRecord("Bulk Invoice Data has been uploaded Successfully.")
-        return response.json()
+            return ""
+
+        lw.logBackUpRecord("Bulk Invoice Data has been uploaded Successfully.")
+        return response
     except Exception as e:
         lw.logRecord("Error in purchase: " + str(e))
 
@@ -97,16 +95,20 @@ def sales(body):
         lw.logBackUpRecord("Header:" + str(header))
         lw.logBackUpRecord("Payload:" + str(body))
         response = requests.post(url, headers=header, json=body)#, data=payload)
-
-        if response.status_code == 500 or response.status_code == 401:# or response.status_code == 400:
-            auth = getToken()
+        response = response.json()
+        print(response)
+        if response['status'] == 0:# or response.status_code == 400:
+            auth, refreshToken = getToken()
+            header = ey_header(auth)
             response = requests.post(url, headers=header, json=body)
             # auth = authorization
             lw.logBackUpRecord(auth)
-        elif response.status_code == 400:
+            response = response.json()
+            print(response)
+        elif response['status'] == '0':
             lw.logBackUpRecord("credit /Debit Note Data has been uploaded with error.")
-        else:    
-            lw.logBackUpRecord("credit /Debit Note Data has been uploaded Successfully.")
+          
+        lw.logBackUpRecord("credit /Debit Note Data has been uploaded Successfully.")
         return response
     except Exception as e:
         lw.logRecord("Error in sales: " + str(e))
@@ -124,15 +126,18 @@ def get_status(ack):
             lw.logBackUpRecord("Header:" + str(header))
             # lw.logBackUpRecord("Payload:" + str(body))
             response = requests.post(url, headers=header)#, data=payload)
-
-            if response.status_code == 500 or response.status_code == 401:# or response.status_code == 400:
-                auth = getToken()
+            response = response.json()
+            if response['status'] == 0:# or response.status_code == 400:
+                auth, refreshToken = getToken()
+                header = ey_header_status(auth, ack)
                 response = requests.post(url, headers=header)
                 # auth = authorization
                 lw.logBackUpRecord(auth)
+                response = response.json()
+                print(response)
             # elif response.status_code == 400:
             #     lw.logBackUpRecord("credit /Debit Note Data has been uploaded with error.")
-            if response['status'] == '1':
+            if response['status'] == '1' and response['operationStatus'] == 'Processed':
                 lw.logBackUpRecord("Data processed Successfully.")
                 return response
             time.sleep(60)
@@ -152,15 +157,23 @@ def get_sales_data(ack):
             lw.logBackUpRecord("Header:" + str(header))
             # lw.logBackUpRecord("Payload:" + str(body))
             response = requests.post(url, headers=header)#, data=payload)
-
-            if response.status_code == 500 or response.status_code == 401:# or response.status_code == 400:
-                auth = getToken()
-                response = requests.post(url, headers=header)
-                # auth = authorization
-                lw.logBackUpRecord(auth)
+            response = requests.post(url, headers=header)#, data=payload)
+            response = response.json()
+            print(response)
+            try:
+                if response['status'] == 0:# or response.status_code == 400:
+                    auth, refreshToken = getToken()
+                    header = ey_header_status(auth, ack)
+                    response = requests.post(url, headers=header)
+                    # auth = authorization
+                    lw.logBackUpRecord(auth)
+                    response = response.json()
+                    print(response)
+            except:
+                pass
             # elif response.status_code == 400:
             #     lw.logBackUpRecord("credit /Debit Note Data has been uploaded with error.")
-            if response['status'] == '1':
+            # if response['status'] == '1':
                 lw.logBackUpRecord("Data processed Successfully.")
                 return response
             time.sleep(60)
@@ -180,15 +193,22 @@ def get_purchase_data(ack):
             lw.logBackUpRecord("Header:" + str(header))
             # lw.logBackUpRecord("Payload:" + str(body))
             response = requests.post(url, headers=header)#, data=payload)
-
-            if response.status_code == 500 or response.status_code == 401:# or response.status_code == 400:
-                auth = getToken()
-                response = requests.post(url, headers=header)
-                # auth = authorization
-                lw.logBackUpRecord(auth)
+            response = response.json()
+            print(response)
+            try:
+                if response['status'] == 0:# or response.status_code == 400:
+                    auth, refreshToken = getToken()
+                    header = ey_header_status(auth, ack)
+                    response = requests.post(url, headers=header)
+                    # auth = authorization
+                    lw.logBackUpRecord(auth)
+                    response = response.json()
+                    print(response)
+            except:
+                pass
             # elif response.status_code == 400:
             #     lw.logBackUpRecord("credit /Debit Note Data has been uploaded with error.")
-            if response['status'] == '1':
+            # if response['status'] == '1':
                 lw.logBackUpRecord("Data processed Successfully.")
                 return response
             time.sleep(60)

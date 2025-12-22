@@ -18,7 +18,7 @@ class ZohoController:
             lw.logRecord("Error in get_fiscal_year: " + str(e))
 
     @staticmethod
-    def create_line_items(items, reverse, gstin):
+    def create_line_items(items, reverse, gstin, customer_type):
         print(items)
         itemlist = []
         # print(is_tax_line)
@@ -33,8 +33,8 @@ class ZohoController:
                 print(data['tax_percentage'])
             except:
                 pass
-            if str(gstin) == 'URP':
-                supplytype = 'EXT'
+            # if str(gstin) == 'URP':
+            #     supplytype = 'IMP'
             if (reverse == 'N'):
                 if (float(data['tax_percentage']) > 0.0):
                     # if is_tax_line == True:
@@ -90,8 +90,13 @@ class ZohoController:
             except Exception as e:
                 print(str(e))
             eligIndicator = itc = ""
+            if str(gstin) == '' and customer_type == 'overseas':
+                if (service == 'Y'):
+                    supplytype = 'IMPS'
+                else:
+                    supplytype = 'IMPG'
             
-            if (data['itc_eligibility'] == 'eligible'):
+            if (data['itc_eligibility'] == 'eligible') and (float(igstAmt)> 0.0 or float(cgstAmt)> 0.0):
                 if (service == 'Y'):
                     eligIndicator = "IS"
                 else:
@@ -101,7 +106,7 @@ class ZohoController:
             if eligIndicator != "NO":
                 avail_igst = igstAmt
                 avail_cgst = cgstAmt
-            if str(data['itc_eligibility']) == 'eligible':
+            if str(data['itc_eligibility']) == 'eligible' and (float(igstAmt)> 0.0 or float(cgstAmt)> 0.0):
                 itc = 'Y'
             lineitems = {
                 # Optional
@@ -117,6 +122,7 @@ class ZohoController:
                 "itemUqc": data['unit'],
                 "itemQty": data['quantity'],
                 "taxableVal": data['item_total'],
+                "isService" : str(service),
                 "igstRt": igstRt,
                 "igstAmt": igstAmt,
                 "cgstRt": cgstRt,
@@ -153,7 +159,6 @@ class ZohoController:
         print(itemlist)
         return itemlist
     
-
     @staticmethod
     def create_line_items_sales(items, reverse, gstin):
         try:
@@ -171,8 +176,6 @@ class ZohoController:
                     print(data['tax_percentage'])
                 except:
                     pass
-                if str(gstin) == 'URP':
-                    supplytype = 'EXP'
                 if (reverse == 'N'):
                     if (float(data['tax_percentage']) > 0.0):
                         # if is_tax_line == True:
@@ -183,7 +186,7 @@ class ZohoController:
                             elif (data['line_item_taxes'][0]['tax_specific_type'] == 'CGST' or data['line_item_taxes'][0]['tax_specific_type'] == 'cgst') or (data['line_item_taxes'][0]['tax_specific_type'] == 'sGST' or data['line_item_taxes'][0]['tax_specific_type'] == 'sgst'):
                                 cgstRt = data['line_item_taxes'][0]['tax_percentage']
                                 cgstAmt = data['line_item_taxes'][0]['tax_amount']
-                            if (data['line_item_taxes'][0]['tax_amount'] > 0) and (supplytype != 'EXP'):
+                            if (data['line_item_taxes'][0]['tax_amount'] > 0):
                                 supplytype = "TAX"
                         except:
                             try:
@@ -193,7 +196,7 @@ class ZohoController:
                                 elif (data['line_item_taxes'][0]['tax_name'][:4] == 'CGST' or data['line_item_taxes'][0]['tax_name'][:4] == 'cgst') or (data['line_item_taxes'][0]['tax_specific_type'] == 'sGST' or data['line_item_taxes'][0]['tax_specific_type'] == 'sgst'):
                                     cgstRt = (data['line_item_taxes'][0]['tax_name'][4:6]).replace(" ","")
                                     cgstAmt = data['line_item_taxes'][0]['tax_amount']
-                                if (data['line_item_taxes'][0]['tax_amount'] > 0) and (supplytype != 'EXP'):
+                                if (data['line_item_taxes'][0]['tax_amount'] > 0):
                                     supplytype = "TAX"
                             except Exception as e:
                                 print(str(e))
@@ -205,7 +208,7 @@ class ZohoController:
                             elif (data['line_item_taxes'][0]['tax_name'][:4] == 'CGST' or data['line_item_taxes'][0]['tax_name'][:4] == 'cgst') or (data['line_item_taxes'][0]['tax_specific_type'] == 'sGST' or data['line_item_taxes'][0]['tax_specific_type'] == 'sgst'):
                                 cgstRt = (data['line_item_taxes'][0]['tax_name'][4:6]).replace(" ","")
                                 cgstAmt = data['line_item_taxes'][0]['tax_amount']
-                            if (data['line_item_taxes'][0]['tax_amount'] > 0) and (supplytype != 'EXP'):
+                            if (data['line_item_taxes'][0]['tax_amount'] > 0):
                                 supplytype = "TAX"
                         except Exception as e:
                             print(str(e))
@@ -217,7 +220,7 @@ class ZohoController:
                         elif (data['reverse_charge_tax_name'][:4] == 'CGST') or data['reverse_charge_tax_name'][:4] == 'IGST':
                             cgstRt = data['reverse_charge_tax_percentage']
                             cgstAmt = float(data['reverse_charge_tax_amount'] / 2)
-                        if (data['line_item_taxes'][0]['tax_amount'] > 0) and (supplytype != 'EXP'):
+                        if (data['line_item_taxes'][0]['tax_amount'] > 0):
                             supplytype = "TAX"
                     except Exception as e:
                         print(str(e))
@@ -228,7 +231,7 @@ class ZohoController:
                             elif (data['line_item_taxes'][0]['tax_name'][:4] == 'CGST' or data['line_item_taxes'][0]['tax_name'][:4] == 'cgst') or (data['line_item_taxes'][0]['tax_specific_type'] == 'sGST' or data['line_item_taxes'][0]['tax_specific_type'] == 'sgst'):
                                 cgstRt = (data['line_item_taxes'][0]['tax_name'][4:6]).replace(" ","")
                                 cgstAmt = data['line_item_taxes'][0]['tax_amount']
-                            if (data['line_item_taxes'][0]['tax_amount'] > 0) and (supplytype != 'EXP'):
+                            if (data['line_item_taxes'][0]['tax_amount'] > 0):
                                 supplytype = "TAX"
                         except Exception as e:
                             print(str(e))
@@ -243,25 +246,31 @@ class ZohoController:
                                 cgst_tds = float(data['tds_tax_amount'])/2
                 except Exception as e:
                     print(str(e))
-                eligIndicator = itc = ""
-                try:
-                    # if (data['itc_eligibility'] == 'eligible'):
-                    if (service == 'Y'):
-                        eligIndicator = "IS"
-                    else:
-                        eligIndicator = "IG"
-                    if (float(igstAmt) <= 0.0) and (float(cgstAmt) <= 0.0):
-                        eligIndicator = "NO"
-                except:
-                    pass
-                if eligIndicator != "NO":
-                    avail_igst = igstAmt
-                    avail_cgst = cgstAmt
-                try:
-                    if str(data['itc_eligibility']) == 'eligible':
-                        itc = 'Y'
-                except:
-                    pass
+                # eligIndicator = itc = ""
+                # if str(gstin) == 'URP':
+                #     if (float(igstAmt) > 0.0) and (float(cgstAmt) > 0.0):
+                #         supplytype = 'EXPT'
+                #     else:
+                #         supplytype = 'EXPWT'
+                # try:
+                #     if (data['itc_eligibility'] == 'eligible') and (float(igstAmt)> 0.0 or float(cgstAmt)> 0.0):
+                #         if (service == 'Y'):
+                #             eligIndicator = "IS"
+                #         else:
+                #             eligIndicator = "IG"
+                #     # if (float(igstAmt) <= 0.0) and (float(cgstAmt) <= 0.0):
+                #     else:
+                #         eligIndicator = "NO"
+                # except:
+                #     pass
+                # if eligIndicator != "NO":
+                #     avail_igst = igstAmt
+                #     avail_cgst = cgstAmt
+                # try:
+                #     if str(data['itc_eligibility']) == 'eligible' and (float(igstAmt)> 0.0 or float(cgstAmt)> 0.0):
+                #         itc = 'Y'
+                # except:
+                #     pass
                 lineitems = {
                     # Optional
                     "itemNo" : idx +1,
@@ -286,7 +295,7 @@ class ZohoController:
                     "stateCessRt" : 0,
                     "stateCessAmt" : 0,
                     "otherValues" : 0,
-                    "lineItemAmt" : 43532,
+                    "lineItemAmt" : (float(data['rate']) * float(data['quantity'])),
                     "plantCode" : "",
                     "serialNoII" : "", #"UE00535-WG0000-NAMT",
                     "productName" : (data['description']).replace('"',"'").replace("\n",""), #"Unstudded Earrings",
@@ -331,71 +340,7 @@ class ZohoController:
             print(str(e))
             pass
 
-    # @staticmethod
-    # def get_contacts():
-    #     """Fetch contacts and format response"""
-    #     try:
-    #         has_more_page = True
-    #         page = 1
-    #         customers = []
-    #         vendors = []
-    #         while (has_more_page == True):
-    #             data = ZohoModel.fetch_contacts(page)
-    #             page += 1
-
-    #             if data['page_context']['has_more_page'] == 'false' or data['page_context']['has_more_page'] == False:
-    #                 has_more_page = False
-
-    #             if "contacts" in data and data["contacts"]:
-    #                 for idx, item in enumerate(data['contacts'], start=1):
-    #                     try:
-    #                         if item['contact_type'] == "vendor":
-    #                             # print(str(item['contact_id']))
-    #                             details = ZohoModel.fetch_contacts_details(str(item['contact_id']))
-    #                             try:
-    #                                 msme_data = details['contact']['msme_type']
-    #                             except:
-    #                                 msme_data = ''
-    #                             msme = ''
-    #                             if msme_data != '':
-    #                                 msme = 'MSME'
-    #                             # if str(details['contact']['contact_id']) == '2362602000000054387':
-    #                             #     pass
-    #                             vendor = {
-    #                                     "vendorID": details['contact']['contact_id'],
-    #                                     "vendorName": details['contact']['company_name'] if details['contact']['company_name'] is not None else '',
-    #                                     "keyContactPerson": str(details['contact']['contact_salutation']) + str(details['contact']['first_name']) + str(details['contact']['last_name']),
-    #                                     "emailId": details['contact']['email'],
-    #                                     "mobileNo": details['contact']['phone'],
-    #                                     "panNumber": details['contact']['pan_no'],
-    #                                     "address1": details['contact']['billing_address']['address'],
-    #                                     "address2": details['contact']['billing_address']['street2'],
-    #                                     "address3": '',#details['contact']['billing_address']['city'],
-    #                                     "city": details['contact']['billing_address']['city'],
-    #                                     "state": details['contact']['billing_address']['state'],
-    #                                     "pinCode": details['contact']['billing_address']['zip'],
-    #                                     "gstin": details['contact']['gst_no'],
-    #                                     "createdDate": datetime.strptime((details['contact']['created_date']), '%d/%m/%Y').strftime('%Y-%m-%d'),
-    #                                     "cin": '', #details['contact']['contact_name'],
-    #                                     "companyClass": '', #details['contact']['contact_name'],
-    #                                     "companyCategory": '', #details['contact']['contact_name'],
-    #                                     "companySubCategory": '', #details['contact']['contact_name'],
-    #                                     "userName": "api@eatgoods.com", #details['contact']['created_by_name'],
-    #                                     # "companyCode": sd.organization_id, #details['contact']['contact_name'],
-    #                                     "companyCreationDate": '', #details['contact']['contact_name'],
-    #                                     "category": msme
-    #                                 }
-    #                             vendors.append(vendor)
-    #                     except Exception as e:
-    #                         lw.logRecord("Error in get_contacts for loop: " + str(e))
-    #             # print("Vendors" + str(vendors))
-    #             # print("Customers" + str(customers))
-    #             cc.bulkVendor(vendors)
-    #             pass
-    #         # return vendors#, customers
-    #     except Exception as e:
-    #         lw.logRecord("Error in get_contacts: " + str(e))
-
+    
     @staticmethod
     def bulkBills():
         """Fetch Bills and format response"""
@@ -427,32 +372,25 @@ class ZohoController:
                                 if (details['bill']['is_reverse_charge_applied'] != False):
                                     reverse = 'Y'
                                 # is_tax_line = details['bill']['is_item_level_tax_calc']
+                                sup_type = "TAX"
+                                docType = "INV"
                                 supgstin = "URP"
-                                suppin = "999999"
-                                supStateCode = "96"
+                                suppin = ""
+                                supStateCode = ""
                                 print(details['bill']['gst_no'])
                                 if details['bill']['gst_no'] != "":
                                     supgstin = details['bill']['gst_no']
                                     supStateCode = supgstin[:2]
                                     suppin = details['bill']['billing_address']['zip']
-                                line_items = ZohoController.create_line_items(details['bill']['line_items'], reverse, supgstin)                               
-                                formatted_date = (datetime.strptime(str(details['bill']['date']), "%Y-%m-%d"))
-                                date = formatted_date.strftime("%d/%m/%Y")
-                                return_period = formatted_date.strftime("%m%Y")
-                                crDrPreGst = "N"
-                                igstRt = cgstRt = igstAmt = cgstAmt = 0
-                                sup_type = ""
-                                tdsFlag = "N"
-                                try:
-                                    if float(details['bill']['tds_percent']) > 0.0:
-                                        tdsFlag = 'Y'
-                                except Exception as e:
-                                    print(str(e))
                                 if str(details['bill']['gst_treatment']) == "overseas":
                                     if float(details['bill']['tax_total']) >0.0:
                                         sup_type = "TAX"
                                     else:
                                         sup_type = "TAX"
+                                    docType = 'SLF'
+                                    supgstin = ""
+                                    suppin = "999999"
+                                    supStateCode = "96"
                                 elif str(details['bill']['gst_treatment']) == "business_gst":
                                     sup_type = "TAX"
                                 elif str(details['bill']['gst_treatment']) == "business_sez":
@@ -460,6 +398,20 @@ class ZohoController:
                                         sup_type = "TAX"
                                     else:
                                         sup_type = "TAX"
+                                line_items = ZohoController.create_line_items(details['bill']['line_items'], reverse, supgstin, str(details['bill']['gst_treatment']))                               
+                                formatted_date = (datetime.strptime(str(details['bill']['date']), "%Y-%m-%d"))
+                                date = formatted_date.strftime("%d/%m/%Y")
+                                return_period = formatted_date.strftime("%m%Y")
+                                crDrPreGst = "N"
+                                igstRt = cgstRt = igstAmt = cgstAmt = 0
+                                tdsFlag = "N"
+                                
+                                try:
+                                    if float(details['bill']['tds_percent']) > 0.0:
+                                        tdsFlag = 'Y'
+                                except Exception as e:
+                                    print(str(e))
+                                
                                 if reverse == 'N':
                                     if (float(details['bill']['tax_total']) > 0.0):
                                         # if is_tax_line == True:
@@ -485,7 +437,7 @@ class ZohoController:
                                     "srcIdentifier": "Zoho",
                                     "returnPeriod": str(return_period),
                                     "suppGstin": str(supgstin),
-                                    "docType": "INV",
+                                    "docType": str(docType),
                                     "docNo": str(details['bill']['bill_number']),
                                     "docDate": str(date),
                                     "orgDocType": "",
@@ -595,40 +547,49 @@ class ZohoController:
                             print(type(details['vendor_credit']['is_reverse_charge_applied']))
                             if (details['vendor_credit']['is_reverse_charge_applied'] != False):
                                 reverse = 'Y'
+                            sup_type = "TAX"
+                            docType = 'DR'
                             # is_tax_line = details['vendor_credit']['is_item_level_tax_calc']
                             supgstin = "URP"
-                            suppin = "999999"
-                            supStateCode = "96"
+                            suppin = ""
+                            supStateCode = ""
                             print(details['vendor_credit']['gst_no'])
                             if details['vendor_credit']['gst_no'] != "":
                                 supgstin = details['vendor_credit']['gst_no']
                                 supStateCode = supgstin[:2]
                                 suppin = details['vendor_credit']['billing_address']['zip']
-                            line_items = ZohoController.create_line_items(details['vendor_credit']['line_items'], reverse, supgstin)
+                            
+                            if str(details['vendor_credit']['gst_treatment']) == "overseas":
+                                if float(details['vendor_credit']['tax_total']) >0.0:
+                                    sup_type = "TAX"
+                                else:
+                                    sup_type = "TAX"
+                                docType = 'DR'
+                                supgstin = ''
+                                suppin = "999999"
+                                supStateCode = "96"
+                            elif str(details['vendor_credit']['gst_treatment']) == "business_gst":
+                                sup_type = "TAX"
+                            elif str(details['vendor_credit']['gst_treatment']) == "business_sez":
+                                if float(details['vendor_credit']['tax_total']) >0.0:
+                                    sup_type = "TAX"
+                                else:
+                                    sup_type = "TAX"
+                            line_items = ZohoController.create_line_items(details['vendor_credit']['line_items'], reverse, supgstin, str(details['vendor_credit']['gst_treatment']))
                             formatted_date = (datetime.strptime(str(details['vendor_credit']['date']), "%Y-%m-%d"))
                             date = formatted_date.strftime("%d/%m/%Y")
                             return_period = formatted_date.strftime("%m%Y")
                             crDrPreGst = "Y"
                             igstRt = cgstRt = igstAmt = cgstAmt = 0
-                            sup_type = "TAX"
+                            
                             tdsFlag = "N"
+                            
                             try:
                                 if float(details['vendor_credit']['tds_percent']) > 0.0:
                                     tdsFlag = 'Y'
                             except Exception as e:
                                 print(str(e))
-                            # if str(details['vendor_credit']['gst_treatment']) == "overseas":
-                            #     if float(details['vendor_credit']['tax_total']) >0.0:
-                            #         sup_type = "TAX"
-                            #     else:
-                            #         sup_type = "TAX"
-                            # elif str(details['vendor_credit']['gst_treatment']) == "business_gst":
-                            #     sup_type = "TAX"
-                            # elif str(details['vendor_credit']['gst_treatment']) == "business_sez":
-                            #     if float(details['vendor_credit']['tax_total']) >0.0:
-                            #         sup_type = "TAX"
-                            #     else:
-                            #         sup_type = "TAX"
+                            
                             try:
                                 if reverse == 'N':
                                     # if (float(details['vendor_credit']['tax_percentage']) > 0.0):
@@ -657,8 +618,8 @@ class ZohoController:
                             "srcIdentifier": "Zoho",
                             "returnPeriod": str(return_period),
                             "suppGstin": str(supgstin),
-                            "docType": "DR",
-                            "docNo": str(details['vendor_credit']['bill_number']),
+                            "docType": str(docType),
+                            "docNo": str(details['vendor_credit']['vendor_credit_number']),
                             "docDate": str(date),
                             "orgDocType": str(details['vendor_credit']['reference_number']),
                             "crDrPreGst": crDrPreGst,
@@ -941,7 +902,8 @@ class ZohoController:
                             print(date)
                             return_period = formatted_date.strftime("%m%Y")
                             crDrPreGst = "N"
-                            sup_type = subsupplyType = "TAX"
+                            sup_type = "TAX"
+                            subsupplyType = "TAX"
                             tdsFlag = "N"
                             try:
                                 if float(details['invoice']['tds_percent']) > 0.0:
@@ -950,13 +912,15 @@ class ZohoController:
                                 print(str(e))
                             # year = ZohoController.get_fiscal_year(date)
                             if str(details['invoice']['gst_treatment']) == "overseas":
-                                subsupplyType = "EXP"
+                                # subsupplyType = "EXP"
                                 if float(details['invoice']['tax_total']) >0.0:
                                     sup_type = "EXPT"
+                                    subsupplyType = "EXP"
                                 else:
-                                    sup_type = "EXPT"
+                                    sup_type = "EXPWT"
+                                    subsupplyType = "EXP"
                             elif str(details['invoice']['gst_treatment']) == "business_gst":
-                                sup_type = "TAX"
+                                # sup_type = "C"
                                 subsupplyType = "TAX"
                             elif str(details['invoice']['gst_treatment']) == "business_sez":
                                 if float(details['invoice']['tax_total']) >0.0:
@@ -991,7 +955,7 @@ class ZohoController:
                                     "orgDocType" : "",
                                     "crDrPreGst" : "",
                                     "custGstin" : "",
-                                    "custOrSupType" : sup_type,
+                                    # "custOrSupType" : sup_type,
                                     "orgCgstin" : "",
                                     "custOrSupName" : str(details['invoice']['customer_name']),
                                     "custOrSupCode" : "",
@@ -1141,7 +1105,7 @@ class ZohoController:
                                 print(date)
                                 return_period = formatted_date.strftime("%m%Y")
                                 crDrPreGst = "Y"
-                                sup_type = subsupplyType = "SR"
+                                sup_type = subsupplyType = "TAX"
 
                                 tdsFlag = "N"
                                 try:
@@ -1151,20 +1115,21 @@ class ZohoController:
                                     print(str(e))
                                 # year = ZohoController.get_fiscal_year(date)
                                 if str(details['creditnote']['gst_treatment']) == "overseas":
-                                    if float(details['creditnote']['tax_total']) >0.0:
-                                        subsupplyType = "EXP"
-                                        sup_type = "EXPT"
-                                    else:
-                                        sup_type = "EXPT"
+                                    # if float(details['creditnote']['tax_total']) >0.0:
+                                    #     subsupplyType = "EXP"
+                                    #     sup_type = "EXPT"
+                                    # else:
+                                    #     sup_type = "EXPwT"
+                                    subsupplyType = "EXP"
                                 elif str(details['creditnote']['gst_treatment']) == "business_gst":
-                                    sup_type = "TAX"
-                                    subsupplyType = "SR"
+                                    # sup_type = "TAX"
+                                    subsupplyType = "TAX"
                                 elif str(details['creditnote']['gst_treatment']) == "business_sez":
-                                    if float(details['creditnote']['tax_total']) >0.0:
-                                        sup_type = "SEZWP"
-                                    else:
-                                        sup_type = "SEZWOP"
-                                    subsupplyType = "SR"
+                                    # if float(details['creditnote']['tax_total']) >0.0:
+                                    #     sup_type = "SEZWP"
+                                    # else:
+                                    #     sup_type = "SEZWOP"
+                                    subsupplyType = "TAX"
                                 
                                 igstRt = cgstRt = igstAmt = cgstAmt = 0
                                 taxtype = ''.join([c for c in str(details['creditnote']['taxes'][0]['tax_name']) if c.isalpha()])
@@ -1184,19 +1149,19 @@ class ZohoController:
                                     "srcIdentifier" : "ZOHO",
                                     "returnPeriod" : str(return_period),
                                     "suppGstin" : str(supgstin),
-                                    "docType" : "INV",
-                                    "docNo" : str(details['invoice']['invoice_number']),
+                                    "docType" : "SR",
+                                    "docNo" : str(details['creditnote']['creditnote_number']),
                                     "docDate" : str(date),
                                     "orgDocType" : "",
                                     "crDrPreGst" : crDrPreGst,
                                     "custGstin" : "",
-                                    "custOrSupType" : sup_type,
+                                    # "custOrSupType" : sup_type,
                                     "orgCgstin" : "",
-                                    "custOrSupName" : str(details['invoice']['customer_name']),
+                                    "custOrSupName" : str(details['creditnote']['customer_name']),
                                     "custOrSupCode" : "",
-                                    "custOrSupAddr1" : str(details['invoice']['billing_address']['street']),
-                                    "custOrSupAddr2" : str(details['invoice']['billing_address']['address']),
-                                    "custOrSupAddr4" : str(details['invoice']['billing_address']['address2']),
+                                    "custOrSupAddr1" : str(details['creditnote']['billing_address']['street']),
+                                    "custOrSupAddr2" : str(details['creditnote']['billing_address']['address']),
+                                    "custOrSupAddr4" : str(details['creditnote']['billing_address']['address2']),
                                     "billToState" : str(custStateCode),
                                     "shipToState" : str(custStateCode),
                                     "pos" : str(custStateCode),
@@ -1227,21 +1192,21 @@ class ZohoController:
                                     "supStateCode" : str(supdetails['gstin'][:2]),
                                     "supPhone" : str(supdetails['phone']),
                                     "supEmail" : str(supdetails['email']),
-                                    "custTradeName" : str(details['invoice']['customer_name']),
-                                    "customerLegalName" : str(details['invoice']['customer_name']),
+                                    "custTradeName" : str(details['creditnote']['customer_name']),
+                                    "customerLegalName" : str(details['creditnote']['customer_name']),
                                     "custPincode" : str(custpin),
                                     "custPhone" : "",
                                     "custEmail" : "",
                                     "dispatcherStateCode" : str(supdetails['gstin'][:2]),
                                     "shipToGstin" : "",
-                                    "shipToTradeName" : str(details['invoice']['customer_name']),
-                                    "shipToLegalName" : str(details['invoice']['customer_name']),
-                                    "shipToBuildingNo" : str(details['invoice']['billing_address']['street']),
-                                    "shipToBuildingName" : str(details['invoice']['billing_address']['address']),
-                                    "shipToLocation" : str(details['invoice']['billing_address']['city']),
+                                    "shipToTradeName" : str(details['creditnote']['customer_name']),
+                                    "shipToLegalName" : str(details['creditnote']['customer_name']),
+                                    "shipToBuildingNo" : str(details['creditnote']['billing_address']['street']),
+                                    "shipToBuildingName" : str(details['creditnote']['billing_address']['address']),
+                                    "shipToLocation" : str(details['creditnote']['billing_address']['city']),
                                     "shipToPincode" : str(custpin),
                                     "invOtherCharges" : "",
-                                    "invAssessableAmt" : float(details['invoice']['sub_total']),
+                                    "invAssessableAmt" : float(details['creditnote']['sub_total']),
                                     "invIgstAmt" : float(igstAmt),
                                     "invCgstAmt" : float(cgstAmt),
                                     "invSgstAmt" : float(cgstAmt),
@@ -1251,7 +1216,7 @@ class ZohoController:
                                     "roundOff" : 0,
                                     "totalInvValueInWords" : "",
                                     "countryCode" : "IN",
-                                    "invValueFc" : float(details['invoice']['sub_total']) + float(igstAmt) (2*float(cgstAmt)),
+                                    "invValueFc" : float(details['creditnote']['sub_total']) + float(igstAmt) (2*float(cgstAmt)),
                                     "invPeriodStartDate" : "",
                                     "invPeriodEndDate" : "",
                                     "payeeName" : "",
@@ -1268,7 +1233,7 @@ class ZohoController:
                                     "tranType" : "",
                                     "subsupplyType" : subsupplyType,
                                     "otherSupplyTypeDesc" : "",
-                                    "exchangeRt" : float(details['invoice']['exchange_rate']),
+                                    "exchangeRt" : float(details['creditnote']['exchange_rate']),
                                     "companyCode" : "",
                                     "glPostingDate" : "",
                                     "salesOrderNo" : "",
@@ -1280,7 +1245,7 @@ class ZohoController:
                                     "invRemarks" : "",
                                     "lineItems": []
                                     }
-                                # invoice["lineItems"].append(line_items)
+                                # creditnote["lineItems"].append(line_items)
                                 credit_note["lineItems"] = line_items
                                 credit_notes["req"].append(credit_note)
                             except Exception as e:
@@ -1292,155 +1257,3 @@ class ZohoController:
         except Exception as e:
             lw.logRecord("Error in bulkCreditNote: " + str(e))
 
-    # @staticmethod
-    # def payments():
-    #     """Fetch Invoice and format response"""
-    #     try:
-    #         has_more_page = True
-    #         page = 1
-    #         # payments = []
-    #         while (has_more_page == True):
-    #             payments = []
-    #             data = ZohoModel.fetch_payments(page)
-    #             page += 1
-
-    #             if data['page_context']['has_more_page'] == 'false' or data['page_context']['has_more_page'] == False:
-    #                 has_more_page = False
-
-    #             if "vendorpayments" in data and data["vendorpayments"]:
-    #                 for idx, item in enumerate(data['vendorpayments'], start=1):
-    #                     try:
-    #                         details = ZohoModel.fetch_payments_details(str(item['payment_id']))
-    #                         # msme_data = details['invoices']['msme_type']
-    #                         reverse = 'N'
-    #                         if details['vendorpayment']['is_reverse_charge_applied'] != 'false' or details['vendorpayment']['is_reverse_charge_applied'] == False:
-    #                             reverse = 'Y'
-    #                         companyCode = ''
-    #                         ref1 = ''
-    #                         ref2 = ''
-    #                         # for cust in details['custom_fields']:
-    #                         #     if cust['label'] == 'Company Id':
-    #                         #         companyCode = cust['value']
-    #                         #     elif cust['label'] == 'Customer Invoice Ref':
-    #                         #         ref1 = cust['value']
-                            
-    #                         # for ref in details['salesorders']:
-    #                         #     if ref['salesorder_number'] == details['reference_number']:
-    #                         #         # ref1 = ref['reference_number']
-    #                         #         ref2 = ref['shipment_date']
-    #                         date =datetime.strptime(str(details['vendorpayment']['date']), "%Y-%m-%d") 
-    #                         year = ZohoController.get_fiscal_year(date)
-    #                         payment = {
-    #                             "vendorId": details['vendorpayment']['vendor_id'],
-    #                             "vendorName": details['vendorpayment']['vendor_name'],
-    #                             "plantLocation": details['vendorpayment']['destination_of_supply'],
-    #                             # "bookNumber": "", #details['vendorpayment']['reference_number'],
-    #                             "paymentsNumber": details['vendorpayment']['payment_number'],
-    #                             "internalInvoiceNumber": details['vendorpayment']['bills'][0]['bill_id'],
-    #                             "vendorInvoiceNumber": details['vendorpayment']['bills'][0]['bill_number'],
-    #                             "paymentType": "PAY",
-    #                             "paymentDate": datetime.strptime((details['vendorpayment']['date']), '%Y-%m-%d').strftime('%d-%m-%Y'), #details['vendorpayment']['total'],
-    #                             "invoiceAmount": details['vendorpayment']['amount'],
-    #                             "paymentAmount": details['vendorpayment']['total_payment_amount'],
-    #                             "fiscalYear": year,        
-    #                             # "companyCode": companyCode, #details['vendorpayment']['customer_custom_fields'],
-    #                             "currency":details['vendorpayment']['currency_code']                                   
-    #                             }
-    #                         payments.append(payment)
-    #                     except Exception as e:
-    #                         lw.logRecord("Error in payments for loop: " + str(e))
-    #                 # print("Invoices" + str(payments))
-                    
-    #                 cc.payments(payments)
-    #             pass
-    #         # return payment
-    #     except Exception as e:
-    #         lw.logRecord("Error in payments: " + str(e))
-
-    # @staticmethod
-    # def update_invoice(trns_id, vend_id, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date):
-    #     try:
-    #         for t, v, i, vi, da, dd, md in zip_longest(trns_id, vend_id, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date, fillvalue="NA"):
-    #             data = ZohoModel.fetch_bill_details(i)
-    #             # print(data)
-    #             cc.update_invoice(data['bill'], t, v, i, vi, da, dd, md)
-    #     except Exception as e:
-    #         lw.logRecord("Error in update_invoice: " + str(e))
-
-    # @staticmethod
-    # def create_all_vendor_credit(trns_id, vend_id, vend_nm, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date):
-    #     try:
-    #         for t, v, vn, i, vi, da, dd, md in zip_longest(trns_id, vend_id, vend_nm, int_inv_no, ven_int_no, dis_amt, dis_date, mat_date, fillvalue="NA"):
-    #             details = ZohoModel.fetch_bill_details(str(i))
-    #             print(details)
-    #             print(details['bill']['total'])
-    #             body = {
-    #                 "vendor_id": str(v),
-    #                 "vendor_name": str(vn),
-    #                 "bill_id": str(i),
-    #                 "bill_number": str(vi),
-    #                 "date": str(dd),
-    #                 "line_items": []
-    #             }
-    #             discount_rate = round((float(details['bill']['discount_amount'])/float(details['bill']['total'])),3)
-    #             rate = round((float(da)/ (float(details['bill']['total']))),3) #-details['bill']['discount_amount'])
-    #             print(str(rate))
-    #             for item in details['bill']['line_items']:
-    #                 print(float(item['item_total']))
-    #                 print(round((float(item['item_total'])*discount_rate),2))
-    #                 print(round((float(item['item_total'])*discount_rate),2) * rate)
-    #                 amt = round(((float(item['item_total']) - round((float(item['item_total'])*discount_rate),2)) * rate),3)
-    #                 print(amt)
-    #                 line_items = {
-    #                             "item_id": item['item_id'],
-    #                             "account_id": item['account_id'],
-    #                             "name": item['name'],
-    #                             "description": item['description'],
-    #                             "rate": amt,
-    #                             "quantity": item['quantity'],
-    #                             "item_type": item['item_type'],
-    #                         }
-    #                 body["line_items"].append(line_items)
-    #             print(body)
-    #             data = ZohoModel.create_vendor_credit(body)
-    #             if data['message'] == 'Vendor credit has been created.':
-    #                 body_bills = {
-    #                                 "bills": [
-    #                                     {
-    #                                         "bill_id": str(i),
-    #                                         "amount_applied": float(da)
-    #                                     }
-    #                                 ]
-    #                             }
-    #                 data_bills = ZohoModel.apply_to_bills(str(data['vendor_credit']['vendor_credit_id']), body_bills)
-    #                 if data_bills['message'] == 'Credits have been applied to the bill(s).':
-    #                     lw.logBackUpRecord("Credit has been applied successfullly for bill: " + str(vi))
-    #                     body_pay = {
-    #                                 "vendor_id": str(v),
-    #                                 "bills": [
-    #                                     {
-    #                                         "bill_id": str(i),
-    #                                         "amount_applied": float(details['bill']['total']) - float(da)
-    #                                     }
-    #                                 ],
-    #                                 "date": str(dd),
-    #                                 "amount": float(details['bill']['total']) - float(da)
-    #                             }
-    #                     print(body_pay)
-    #                     data_pay = ZohoModel.create_paymets(body_pay)
-    #                     print(data_pay)
-    #                     if data_pay['message'] == 'The payment made to the vendor has been recorded':
-    #                         lw.logBackUpRecord("Payment has been created successfullly for bill: " + str(vi))
-    #                         cc.postingAck(t, v, i, vi)
-    #                     else: 
-    #                         lw.logRecord("Error while creating payments for bill: " + str(vi))
-
-    #                 else: 
-    #                     lw.logRecord("Error while applying credit for bill: " + str(vi))
-    #             else:
-    #                 lw.logRecord("Error while creating vendor credit for: " + str(vi))
-    #             # print(data)
-    #             # cc.update_invoice(data['bill'], t, v, i, vi, da, dd, md)
-    #     except Exception as e:
-    #         print("Error in update_invoice: " + str(e))
-    #         lw.logRecord("Error in update_invoice: " + str(e))
